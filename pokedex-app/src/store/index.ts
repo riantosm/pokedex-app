@@ -37,9 +37,12 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
+      // Cache RTK Query besar & sudah pasti serializable — lewati cek dev yang lambat.
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredPaths: [pokeApi.reducerPath],
       },
+      immutableCheck: { ignoredPaths: [pokeApi.reducerPath] },
     }).concat(pokeApi.middleware),
 });
 

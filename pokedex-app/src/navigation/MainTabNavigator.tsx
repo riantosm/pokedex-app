@@ -31,7 +31,10 @@ const moreIcon = ({ color, size }: TabIconProps) => (
 
 export default function MainTabNavigator() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }} tabBar={renderTabBar}>
+    <Tab.Navigator
+      screenOptions={{ headerShown: false, animation: 'shift' }}
+      tabBar={renderTabBar}
+    >
       <Tab.Screen
         name={ROUTES.POKEDEX}
         component={PokemonList}

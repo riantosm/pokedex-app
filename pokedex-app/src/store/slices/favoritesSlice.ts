@@ -24,10 +24,16 @@ const favoritesSlice = createSlice({
     removeFavorite(state, action: PayloadAction<number>) {
       state.items = state.items.filter(p => p.id !== action.payload);
     },
+    /** Perbarui nama/tipe favorit dari data API terbaru (dipakai saat pull-to-refresh). */
+    syncFavorites(state, action: PayloadAction<FavoritePokemon[]>) {
+      const fresh = new Map(action.payload.map(p => [p.id, p]));
+      state.items = state.items.map(p => fresh.get(p.id) ?? p);
+    },
   },
 });
 
-export const { toggleFavorite, removeFavorite } = favoritesSlice.actions;
+export const { toggleFavorite, removeFavorite, syncFavorites } =
+  favoritesSlice.actions;
 export default favoritesSlice.reducer;
 
 export const selectFavorites = (state: RootState) => state.favorites.items;

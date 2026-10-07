@@ -1,6 +1,7 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboardVisible } from '@/hooks/useKeyboardVisible';
 import AppText from '@/components/atoms/AppText';
 import PressableScale from '@/components/atoms/PressableScale';
 import { colors } from '@/theme/colors';
@@ -8,10 +9,18 @@ import { shadows } from '@/theme/shadows';
 import { fonts } from '@/theme/typography';
 
 const ICON_SIZE = 22;
+const BAR_HEIGHT = 62;
+const BAR_GAP_TOP = 8;
+const MIN_BOTTOM = 14;
+
+/** Tinggi total area tab bar melayang (bar + jarak + inset bawah). */
+export const tabBarOverlayHeight = (bottomInset: number) =>
+  BAR_GAP_TOP + BAR_HEIGHT + Math.max(bottomInset, MIN_BOTTOM);
 
 /**
- * Tab bar kapsul melayang (desain: `Nav/Tab Bar`). Generik — ikon & label diambil dari
- * `options.tabBarIcon` / `options.tabBarLabel` tiap screen.
+ * Tab bar kapsul melayang di atas konten (desain: `Nav/Tab Bar`). Generik — ikon & label
+ * diambil dari `options.tabBarIcon` / `options.tabBarLabel` tiap screen.
+ * Konten layar memberi ruang bawah lewat `useTabBarInset()`.
  */
 export default function TabBar({
   state,
@@ -19,9 +28,21 @@ export default function TabBar({
   navigation,
 }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  // Sembunyikan saat mengetik supaya tidak naik menutupi konten di atas keyboard.
+  const keyboardVisible = useKeyboardVisible();
+
+  if (keyboardVisible) {
+    return null;
+  }
 
   return (
-    <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 14) }]}>
+    <View
+      pointerEvents="box-none"
+      style={[
+        styles.wrap,
+        { paddingBottom: Math.max(insets.bottom, MIN_BOTTOM) },
+      ]}
+    >
       <View style={styles.bar}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -70,18 +91,21 @@ export default function TabBar({
 
 const styles = StyleSheet.create({
   wrap: {
-    paddingTop: 8,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingTop: BAR_GAP_TOP,
     paddingHorizontal: 16,
-    backgroundColor: colors.bg,
   },
   bar: {
     flexDirection: 'row',
-    height: 62,
+    height: BAR_HEIGHT,
     padding: 6,
     borderRadius: 31,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.line,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.tabBar,
     ...shadows.tabBar,
   },
   item: {

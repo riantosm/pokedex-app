@@ -17,7 +17,7 @@ export interface IconButtonProps extends PressableScaleProps {
 }
 
 const variantStyles: Record<IconButtonVariant, ViewStyle> = {
-  glass: { backgroundColor: '#FFFFFF2E' },
+  glass: { backgroundColor: colors.glass },
   surface: { backgroundColor: colors.surface },
 };
 

@@ -92,14 +92,27 @@ Sheet Urutkan & Filter dan sheet Ability = komponen `organisms/`, bukan route.
   (config: `react-native.config.js`). Tambah font baru → jalankan ulang perintah itu lalu rebuild.
 - Permukaan berwarna tipe (kartu, hero, tile) pakai `typePalette(type)`; saat tipe belum dimuat `neutralPalette`.
 
+### Aturan layout & interaksi (wajib untuk layar baru)
+
+- **Tab bar melayang** (absolute di atas konten). Layar tab wajib memberi `paddingBottom: useTabBarInset()`
+  di konten scroll supaya item terakhir tidak tertutup. Tab bar disembunyikan saat keyboard tampil.
+- Layar tab tanpa header tetap memasang `<StatusBarScrim />` supaya konten tidak terlihat di balik status bar.
+- Warna ikon status bar per layar lewat `useStatusBarStyle()` (hero berwarna → ikuti `typePalette().text`).
+- **Semua layar bisa pull-to-refresh**: `RefreshControl` + `useRefresh([...refetch])`.
+- Animasi: stack `slide_from_right`, tab `shift`, kartu grid `gridItemEntering(index)`, baris daftar
+  `listItemEntering(index)`, isi tab `tabContentEntering`, hero parallax + `CollapsingTopBar` (semua di `utils/motion.ts`).
+
 ### Komponen
 
 | Lapisan | Komponen |
 |---|---|
-| atoms | `AppText`, `Button`, `IconButton`, `PressableScale`, `PokeballIcon`, `Skeleton`, `TypeBadge` |
-| molecules | `PokemonCard`, `TypeChip`, `SearchField`, `StatRow`, `EmptyState`, `SectionHeader` |
-| organisms | `TabBar`, `BottomSheet` |
-| templates | `MainLayout`, `PlaceholderLayout` (sementara) |
+| atoms | `AppText`, `Button`, `IconButton`, `PressableScale`, `PokeballIcon`, `Skeleton`, `StatusBarScrim`, `TypeBadge` |
+| molecules | `PokemonCard`, `PokemonCardSkeleton`, `TypeChip`, `SearchField`, `StatRow`, `EmptyState`, `SectionHeader`, `UnderlineTabs`, `InfoRow`, `TypeEffectGroup` |
+| organisms | `TabBar`, `BottomSheet`, `CollapsingTopBar` |
+| templates | — |
+
+Hooks: `useDebouncedValue`, `useKeyboardVisible`, `usePokemonTypes` (tipe lazy per kartu), `useRefresh`,
+`useStatusBarStyle`, `useTabBarInset`.
 
 ### Patch
 
@@ -111,8 +124,9 @@ Sheet Urutkan & Filter dan sheet Ability = komponen `organisms/`, bukan route.
 
 - [x] Init: navigasi, store, service, utils + test, theme, tab bar custom, layar placeholder.
 - [x] Fondasi UI: font Poppins + Inter, tipografi, komponen dasar.
-- [ ] Pokédex (Home) · [ ] Detail Pokémon · [ ] Tipe & Detail Tipe · [ ] Favorit & Lainnya · [ ] Polish + README
-  (setelah semua layar jadi, hapus `templates/PlaceholderLayout`).
+- [x] Semua layar: Pokédex, Detail Pokémon (+ sheet Ability), Tipe, Detail Tipe, Favorit, Lainnya.
+- [x] Pull-to-refresh di semua layar, animasi transisi & scroll, tab bar melayang.
+- [ ] README (setup + keputusan teknis).
 
 Setiap perubahan yang terlihat pengguna → tambah bullet di `documentation/CHANGELOG.md`
 bagian `## Belum dirilis`. Update file ini saat ada layar, fitur, atau konvensi baru.

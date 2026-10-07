@@ -39,3 +39,25 @@ export function cleanFlavorText(text: string): string {
     .replace(/\s{2,}/g, ' ')
     .trim();
 }
+
+const integerFormat = new Intl.NumberFormat('id-ID');
+
+/** `1025` → `1.025`. */
+export function formatCount(value: number): string {
+  return integerFormat.format(value);
+}
+
+/** Ukuran data: `12_400_000` → `12,4 MB`. */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  const units = ['KB', 'MB', 'GB'];
+  let value = bytes / 1024;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${decimalFormat.format(value)} ${units[unit]}`;
+}

@@ -6,7 +6,7 @@ import type {
 import { MAX_POKEMON_ID, idFromUrl, isPokemonTypeName } from '@/utils/pokemon';
 import { pokeApi } from './pokeApi';
 
-const typeApi = pokeApi.injectEndpoints({
+export const typeApi = pokeApi.injectEndpoints({
   endpoints: build => ({
     /** 18 tipe game utama (`unknown`, `stellar`, `shadow` dibuang). */
     getTypes: build.query<PokemonTypeName[], void>({

@@ -8,7 +8,10 @@ export const colors = {
   ink2: '#55555F',
   ink3: '#8A8A94',
   bg: '#F4F4F6',
+  bgTranslucent: '#F4F4F6',
   surface: '#FFFFFF',
+  /** Tab bar melayang — sedikit tembus supaya konten di belakangnya terasa. */
+  tabBar: '#FFFFFFF5',
   line: '#E6E6EC',
   white: '#FFFFFF',
   transparent: 'transparent',
@@ -19,6 +22,9 @@ export const colors = {
   success: '#1F7A3D',
   genderMale: '#5B8DEF',
   genderFemale: '#F2A3C4',
+  genderMaleText: '#3A6FD8',
+  genderFemaleText: '#C2477D',
+  glass: '#FFFFFF2E',
 } as const;
 
 /** Warna resmi tipe — untuk titik, bar stat, dan aksen kecil. */

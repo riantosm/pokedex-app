@@ -1,4 +1,5 @@
 import type { ChainLink, EvolutionDetail } from '@/types';
+import { formatName } from './format';
 import { idFromUrl } from './pokemon';
 
 export interface EvolutionStep {
@@ -35,15 +36,15 @@ export function evolutionTriggerLabel(detail: EvolutionDetail): string {
     return `Level ${detail.min_level}`;
   }
   if (detail.item) {
-    return `Pakai ${detail.item.name.replace(/-/g, ' ')}`;
+    return `Pakai ${formatName(detail.item.name)}`;
   }
   if (detail.min_happiness !== null) {
     return detail.time_of_day ? `Akrab (${detail.time_of_day})` : 'Akrab';
   }
   if (detail.trigger.name === 'trade') {
     return detail.held_item
-      ? `Tukar + ${detail.held_item.name.replace(/-/g, ' ')}`
+      ? `Tukar + ${formatName(detail.held_item.name)}`
       : 'Tukar';
   }
-  return detail.trigger.name.replace(/-/g, ' ');
+  return formatName(detail.trigger.name);
 }

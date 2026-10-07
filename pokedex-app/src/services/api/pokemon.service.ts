@@ -8,7 +8,7 @@ import type {
 import { MAX_POKEMON_ID, idFromUrl } from '@/utils/pokemon';
 import { pokeApi } from './pokeApi';
 
-const pokemonApi = pokeApi.injectEndpoints({
+export const pokemonApi = pokeApi.injectEndpoints({
   endpoints: build => ({
     /** Index 1.025 Pokémon nasional — dasar pencarian, filter, dan urut (semua lokal). */
     getPokemonIndex: build.query<PokemonSummary[], void>({

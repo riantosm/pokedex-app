@@ -66,7 +66,7 @@ describe('evolutionTriggerLabel', () => {
   it('level, item, tukar', () => {
     expect(evolutionTriggerLabel(detail({ min_level: 16 }))).toBe('Level 16');
     expect(evolutionTriggerLabel(detail({ item: res('thunder-stone') }))).toBe(
-      'Pakai thunder stone',
+      'Pakai Thunder Stone',
     );
     expect(evolutionTriggerLabel(detail({ trigger: res('trade') }))).toBe(
       'Tukar',
