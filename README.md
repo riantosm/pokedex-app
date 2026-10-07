@@ -2,10 +2,15 @@
 
 Aplikasi Pokédex React Native (Android & iOS) yang mengambil data dari [PokéAPI](https://pokeapi.co/docs/v2).
 Jelajahi 1.025 Pokémon nasional, cari berdasarkan nama atau nomor, saring per tipe dan generasi,
-pelajari stat, evolusi, dan kelemahannya, lalu simpan favorit — tetap bisa dibuka saat offline.
+pelajari stat, move, lokasi, evolusi, dan kelemahannya, lalu simpan favorit — tetap bisa dibuka saat offline.
+Tab **Jelajah** (v2) membuka hampir seluruh data PokéAPI lainnya: move, item, berry, region & lokasi,
+game, Pokédex regional, kelompok Pokémon, nature, growth rate, kontes, pemicu evolusi, dan metode encounter.
+
+**Desain (pen.dev):** <https://app.pen.dev/s/pxSZIunWq7kzaxJQAu8UZFhh2eDGY_vDyWLisMg31tA>
+— file sumbernya ada di [`design/pokedex.pen`](design/pokedex.pen).
 
 <!-- apk-download -->
-<a href="https://github.com/riantosm/pokedex-app/raw/main/pokedex-app/documentation/PokedexApp-v0.1.0%281%29-release.apk"><img alt="Download APK v0.1.0" src="https://img.shields.io/badge/Download%20APK-v0.1.0-DC0A2D?style=for-the-badge&logo=android&logoColor=white" /></a>
+<a href="https://github.com/riantosm/pokedex-app/raw/main/pokedex-app/documentation/PokedexApp-v0.2.0%282%29-release.apk"><img alt="Download APK v0.2.0" src="https://img.shields.io/badge/Download%20APK-v0.2.0-DC0A2D?style=for-the-badge&logo=android&logoColor=white" /></a>
 <!-- /apk-download -->
 
 APK Android (arm64-v8a & armeabi-v7a, Android 7.0+) — unduh, lalu izinkan *Instal aplikasi tidak dikenal*
@@ -14,8 +19,8 @@ saat diminta. File-nya juga ada di [`pokedex-app/documentation/`](pokedex-app/do
 <p>
   <img src="docs/screenshots/01-pokedex.png" width="180" alt="Pokédex" />
   <img src="docs/screenshots/04-detail-about.png" width="180" alt="Detail — About" />
-  <img src="docs/screenshots/06-detail-evolution.png" width="180" alt="Detail — Evolusi" />
-  <img src="docs/screenshots/09-types.png" width="180" alt="Tipe" />
+  <img src="docs/screenshots/16-explore.png" width="180" alt="Jelajah" />
+  <img src="docs/screenshots/18-region-detail.png" width="180" alt="Region Kanto" />
 </p>
 
 ---
@@ -23,6 +28,7 @@ saat diminta. File-nya juga ada di [`pokedex-app/documentation/`](pokedex-app/do
 ## Daftar isi
 
 - [Fitur](#fitur)
+- [Desain](#desain)
 - [Screenshot](#screenshot)
 - [Menjalankan project](#menjalankan-project)
 - [Struktur repo](#struktur-repo)
@@ -40,11 +46,17 @@ saat diminta. File-nya juga ada di [`pokedex-app/documentation/`](pokedex-app/do
 | Halaman | Isi |
 |---|---|
 | **Pokédex** | Grid 1.025 Pokémon berwarna sesuai tipe, dimuat 20 per halaman saat digulir. Cari nama (sebagian) atau nomor (persis), chip filter 18 tipe, sheet urutkan (nomor / nama) + filter generasi I–IX. |
-| **Detail Pokémon** | Hero berwarna tipe dengan parallax, tab **About** (deskripsi, tinggi/berat, ability, gender, egg group, habitat), **Stats** (6 base stat + total), **Evolusi** (rantai + syarat, bisa ditap), **Kelemahan** (×4 / ×2 / ×½ / ×¼ / ×0, termasuk dual-type). Tombol sebelum/berikutnya, favorit, sheet efek ability. |
-| **Tipe** | 18 tipe dengan jumlah Pokémon dan artwork perwakilan. |
-| **Detail Tipe** | Efektivitas saat menyerang & bertahan, lalu daftar Pokémon bertipe tersebut. |
+| **Detail Pokémon** | Hero berwarna tipe dengan parallax dan 6 tab: **About** (deskripsi, tinggi/berat, ability, gender, link ke egg group / habitat / warna / bentuk / growth rate, nomor di tiap Pokédex regional), **Stats** (6 base stat + total; tap stat → sheet nature naik/turun, move penaik, karakteristik IV), **Moves** (pilih game, segmen Level / TM / Telur / Tutor), **Evolusi** (rantai + syarat), **Lokasi** (area per game: metode, level, kondisi, peluang), **Lemah** (×4 / ×2 / ×½ / ×¼ / ×0). Tombol sebelum/berikutnya, favorit, sheet ability. |
+| **Jelajah** (v2) | Hub semua data di luar Pokédex, dengan jumlah tiap resource. |
+| **Tipe** | 18 tipe dengan jumlah Pokémon dan artwork perwakilan; detail tipe berisi efektivitas menyerang & bertahan serta daftar Pokémon-nya. |
+| **Moves** | 937 move: cari, filter Fisik / Khusus / Status dan tipe. Detail: power/akurasi/PP/prioritas, efek, target, TM per game, kontes, Pokémon yang mempelajari. |
+| **Item & Berry** | 2.223 item per kantong (harga, atribut, efek Fling, pemegang liar) dan 68 berry (5 rasa ↔ kategori kontes, data tanam, Natural Gift). |
+| **Region & lokasi** | 11 region (game, Pokédex, lokasi kota/rute/lainnya), detail lokasi dengan Pokémon liar per versi beserta level & peluang, dan Pal Park (skor Catching Show). |
+| **Game & Pokédex** | 9 generasi beserta grup versinya; Pokédex regional dalam grid. |
+| **Kelompok Pokémon** | Egg group, warna, bentuk, habitat, dan gender (sebaran rasio jantan/betina 1.025 spesies). |
+| **Referensi** | Nature (stat ▲▼, rasa, Pokéathlon, gaya bertarung), growth rate (rumus, grafik EXP, contoh), kontes, pemicu evolusi (+ variabel tersembunyi), metode & kondisi encounter. |
 | **Favorit** | Pokémon yang disimpan di perangkat; tersedia offline. |
-| **Lainnya** | Ukuran data tersimpan, hapus cache, versi app, sumber data, disclaimer. |
+| **Lainnya** | **Bahasa data** (14 bahasa PokéAPI untuk nama & deskripsi, dengan contoh langsung; bahasa tak resmi ditandai), ukuran data tersimpan, hapus cache, versi app, **versi data PokéAPI** (tanggal rilis data), sumber data, disclaimer. |
 
 Berlaku di semua halaman:
 
@@ -58,21 +70,53 @@ Berlaku di semua halaman:
 - **Scroll mulus** meski grid penuh gambar (lihat [Performa](#performa)).
 - **Ikon aplikasi Pikachu** (adaptive & themed icon Android 13+, set AppIcon iOS).
 
+## Desain
+
+Semua layar didesain dulu di pen.dev, lalu diimplementasikan mengikuti token & komponen yang sama
+(tema *Classic Red*, Poppins + Inter, warna kartu per tipe).
+
+- Lihat desain: <https://app.pen.dev/s/pxSZIunWq7kzaxJQAu8UZFhh2eDGY_vDyWLisMg31tA>
+- File: [`design/pokedex.pen`](design/pokedex.pen) — section 00 komponen, 01–04 v1 (Pokédex, Detail,
+  Tipe, Favorit & Lainnya), 05–09 v2 (Jelajah, Detail v2, Moves/Item/Berry, Dunia, Kelompok & Referensi).
+- Brief produk & prinsip desain: [`BRIEF.md`](BRIEF.md).
+
 ## Screenshot
 
-Diambil dari perangkat fisik (Samsung Galaxy A54, Android 16), build debug.
+Diambil dari perangkat fisik (Samsung Galaxy A54, Android 16). Screenshot v0.2.0 dari APK release.
 
 | Pokédex | Cari "char" | Urutkan & filter | Detail · About |
 |---|---|---|---|
 | <img src="docs/screenshots/01-pokedex.png" width="200" /> | <img src="docs/screenshots/02-search.png" width="200" /> | <img src="docs/screenshots/03-sort-filter.png" width="200" /> | <img src="docs/screenshots/04-detail-about.png" width="200" /> |
 
-| Detail · Stats | Detail · Evolusi | Detail · Kelemahan | Sheet ability |
+| Detail · Stats | Detail · Evolusi | Detail · Kelemahan | Sheet ability (v0.2.0) |
 |---|---|---|---|
 | <img src="docs/screenshots/05-detail-stats.png" width="200" /> | <img src="docs/screenshots/06-detail-evolution.png" width="200" /> | <img src="docs/screenshots/07-detail-weakness.png" width="200" /> | <img src="docs/screenshots/08-ability-sheet.png" width="200" /> |
 
-| Tipe | Detail tipe | Favorit | Lainnya |
+| Tipe | Detail tipe | Favorit | Lainnya (v0.2.0) |
 |---|---|---|---|
 | <img src="docs/screenshots/09-types.png" width="200" /> | <img src="docs/screenshots/10-type-detail.png" width="200" /> | <img src="docs/screenshots/11-favorites.png" width="200" /> | <img src="docs/screenshots/12-more.png" width="200" /> |
+
+**v2**
+
+| Detail · Moves | Detail · Lokasi | Sheet stat | Jelajah |
+|---|---|---|---|
+| <img src="docs/screenshots/13-detail-moves.png" width="200" /> | <img src="docs/screenshots/14-detail-locations.png" width="200" /> | <img src="docs/screenshots/15-stat-sheet.png" width="200" /> | <img src="docs/screenshots/16-explore.png" width="200" /> |
+
+| Moves | Region · Kanto | Item | Pal Park |
+|---|---|---|---|
+| <img src="docs/screenshots/17-moves.png" width="200" /> | <img src="docs/screenshots/18-region-detail.png" width="200" /> | <img src="docs/screenshots/19-items.png" width="200" /> | <img src="docs/screenshots/20-pal-park.png" width="200" /> |
+
+| Kelompok · Gender | Growth rate | Splash | Sheet bahasa data |
+|---|---|---|---|
+| <img src="docs/screenshots/21-pokemon-group.png" width="200" /> | <img src="docs/screenshots/22-growth-rate.png" width="200" /> | <img src="docs/screenshots/23-splash.png" width="200" /> | <img src="docs/screenshots/24-language-sheet.png" width="200" /> |
+
+| Detail · bahasa Jepang | Detail move | Berry | Pokédex regional |
+|---|---|---|---|
+| <img src="docs/screenshots/25-detail-japanese.png" width="200" /> | <img src="docs/screenshots/26-move-detail.png" width="200" /> | <img src="docs/screenshots/27-berries.png" width="200" /> | <img src="docs/screenshots/28-regional-dex.png" width="200" /> |
+
+| Nature | Metode encounter |
+|---|---|
+| <img src="docs/screenshots/29-natures.png" width="200" /> | <img src="docs/screenshots/30-encounter-methods.png" width="200" /> |
 
 ## Menjalankan project
 
@@ -130,11 +174,11 @@ Tidak perlu API key — PokéAPI publik.
     │   ├── navigation/   # ROUTES, param types, stack + tab navigator
     │   ├── screens/      # satu folder per route (+ sub-komponen khusus layar)
     │   ├── services/api/ # axios + RTK Query, satu file per domain PokéAPI
-    │   ├── store/        # Redux store, redux-persist, favoritesSlice
+    │   ├── store/        # Redux store, redux-persist, favorites / settings / network slice
     │   ├── theme/        # token warna, tipografi, shadow (dari desain)
     │   ├── types/        # tipe response PokéAPI (subset field yang dipakai)
     │   └── utils/        # fungsi murni + __tests__
-    ├── documentation/    # CHANGELOG (+ HTML), APK hasil build (tidak di-commit)
+    ├── documentation/    # CHANGELOG (+ HTML), APK release terbaru (debug tidak di-commit)
     ├── patches/          # patch-package
     └── CLAUDE.md / PROJECT_CONVENTIONS.md   # konvensi kode
 ```
@@ -153,17 +197,25 @@ Screen ──hook──▶ RTK Query endpoint (<domain>.service.ts) ──▶ ax
 
 ### Endpoint yang dipakai
 
-| Endpoint | Dipakai di |
-|---|---|
-| `GET /pokemon?limit=1025` | Index untuk pencarian, filter, dan urut (sekali, di-cache) |
-| `GET /pokemon/{id}` | About & Stats di detail, sinkron favorit |
-| `GET /pokemon-form/{id}` | Tipe di kartu grid (lazy, payload ±10× lebih kecil) |
-| `GET /pokemon-species/{id}` | Deskripsi, genus, gender, habitat, link evolusi |
-| `GET /evolution-chain/{id}` | Tab Evolusi |
-| `GET /type/{name}` | Filter tipe, Kelemahan, halaman Tipe & Detail Tipe |
-| `GET /generation/{id}` | Filter generasi |
-| `GET /ability/{name}` | Sheet ability |
-| `official-artwork/{id}.png` | Semua gambar — URL dibentuk dari id, tanpa panggil detail |
+**Ke-51 resource PokéAPI** dipakai di UI (sejak v0.2.0).
+
+| Grup | Resource | Dipakai di |
+|---|---|---|
+| Pokémon | `pokemon`, `pokemon-form`, `pokemon-species`, `ability`, `type`, `stat`, `characteristic`, `nature`, `pokeathlon-stat`*, `egg-group`, `gender`, `growth-rate`, `pokemon-color`, `pokemon-shape`, `pokemon-habitat` | Pokédex, Detail, Tipe, Kelompok, Nature, Growth rate |
+| Evolusi | `evolution-chain`, `evolution-trigger`, `evolution-variable` | Tab Evolusi, Pemicu evolusi |
+| Moves | `move`, `move-ailment`*, `move-battle-style`*, `move-category`*, `move-damage-class`, `move-learn-method`*, `move-target`, `machine` | Moves, Detail move, tab Moves, Nature |
+| Kontes | `contest-type`, `contest-effect`, `super-contest-effect` | Detail move, Berry, Kontes |
+| Item | `item`, `item-attribute`, `item-category`, `item-fling-effect`, `item-pocket`, `currency` | Item, Detail item |
+| Berry | `berry`, `berry-firmness`, `berry-flavor` | Berry, Kontes, Nature |
+| Lokasi | `region`, `location`, `location-area`, `pal-park-area`, `encounter-method`, `encounter-condition`, `encounter-condition-value`* | Region, Lokasi, Pal Park, tab Lokasi, Metode encounter |
+| Game | `generation`, `version`, `version-group`, `pokedex` | Filter generasi, Game, Pokédex regional, tab Moves |
+| Utilitas | `language`, `meta` | Sheet Bahasa data (label *tidak resmi* dari `language.official`), baris Versi data PokéAPI di Lainnya |
+
+\* Datanya dibaca dari response resource induk (mis. `nature.pokeathlon_stat_changes`,
+`move.meta.ailment`, `pokemon.moves[].version_group_details`) — tanpa request terpisah.
+
+Gambar: `official-artwork/{id}.png` (URL dibentuk dari id) dan sprite item `items/dream-world/{name}.png`
+(fallback ke sprite default).
 
 Detail lengkap per layar ada di [`BRIEF.md`](BRIEF.md).
 
@@ -190,6 +242,26 @@ Detail lengkap per layar ada di [`BRIEF.md`](BRIEF.md).
   diberi ruang bawah (`useTabBarInset`) supaya item terakhir tidak tertutup.
 - **Bar stat berskala 0–255** (nilai base stat maksimum di game), bukan relatif terhadap stat tertinggi
   Pokémon itu — supaya bar antar-Pokémon bisa dibandingkan.
+- **Daftar besar dari index lokal (v2).** Move (937), item (2.223), dan lokasi (1.104) diambil sebagai
+  index nama sekali (`resource.service.ts`), lalu dicari & dipaginasi di perangkat; detail tiap baris
+  dimuat lazy saat baris dirender — pola yang sama dengan grid Pokédex.
+- **Teks mengikuti bahasa data.** Nama & deskripsi diambil dari `names[]` / `flavor_text_entries[]`
+  lewat `pickName` / `pickEntry` (fallback Inggris, lalu slug). Cache hanya menyimpan 14 bahasa yang
+  didukung, satu entri terbaru per bahasa, jadi ganti bahasa di *Lainnya → Bahasa data* langsung berlaku
+  tanpa unduh ulang. Efek ability lengkap hanya ada dalam en/de/fr; bahasa lain memakai teks game
+  (`flavor_text_entries`), lalu jatuh ke Inggris dengan keterangan (`utils/ability.ts`).
+- **Cache punya versi.** Kalau bentuk data hasil `transformResponse` berubah (v0.2.0 menambah field untuk
+  layar baru), `version` redux-persist dinaikkan dan migrasinya membuang cache API lama — favorit &
+  pengaturan tetap. Tanpa itu pengguna yang upgrade akan membaca data lama yang kekurangan field.
+- **Data PokéAPI tidak selalu lengkap.** Tipe di `types/` mengikuti field yang bisa `null` (dipindai ke
+  semua resource kecil + sampel resource besar), mis. berry generasi baru (Kee, Hopo, Roseli) tanpa data
+  tanam, nature netral tanpa stat, region spin-off tanpa generasi. Nama Pokémon dari slug bentuk bawaan
+  (`deoxys-normal`, `nidoran-f`) dirapikan lewat `pokemonName` tanpa request tambahan.
+- **Urutan game kronologis.** Id grup versi PokéAPI tidak kronologis (Red & Green JP ditambahkan
+  belakangan), jadi chip game, pemilih versi di tab Moves, dan tab Lokasi diurutkan dengan tabel rilis
+  (`utils/labels.ts`, ada unit test).
+- **Rumus growth rate** dari PokéAPI berupa LaTeX; diubah ke teks biasa (pecahan, pangkat, lantai,
+  rumus bertingkat Erratic/Fluctuating) di `utils/formula.ts`.
 - **Patch FastImage.** Definisi tipe `@d11/react-native-fast-image` merujuk tipe yang sudah dihapus di
   RN 0.87; diperbaiki lewat `patch-package` (hanya file `.d.ts`).
 
@@ -237,14 +309,16 @@ Build release dikecilkan tanpa mengurangi fitur:
 - **Font di-subset** ke Latin + tanda baca/simbol yang dipakai (1,98 MB → 1,27 MB), tanpa glyph yang
   hilang (diverifikasi otomatis).
 
-Hasil: **APK release 21,9 MB** (dua arsitektur ARM, satu `classes.dex` 3,7 MB) — sebagai pembanding,
-APK debug tanpa optimasi ini 236,8 MB.
+Hasil: **APK release v0.2.0 22,1 MB** (dua arsitektur ARM, satu `classes.dex` 3,8 MB, bundle JS 4,5 MB) —
+sebagai pembanding, APK debug tanpa optimasi ini 236,8 MB. Tab Jelajah dan 20+ layar v2 hanya menambah ±0,2 MB.
 
 ## Pengujian
 
-- **Unit test (Jest)** — 31 test untuk logika murni: format satuan PokéAPI (dm → m, hg → kg), parsing
+- **Unit test (Jest)** — 57 test untuk logika murni: format satuan PokéAPI (dm → m, hg → kg), parsing
   URL, rasio gender, cari/filter/urut, efektivitas tipe (termasuk dual-type, mis. Bulbasaur ×¼ terhadap
-  Grass), perataan pohon evolusi (termasuk cabang Eevee), dan deteksi PokéAPI tidak terjangkau.
+  Grass), perataan pohon evolusi (termasuk cabang Eevee), deteksi PokéAPI tidak terjangkau, pemilihan
+  bahasa data & fallback efek ability, nama Pokémon dari slug (`nidoran-f` → Nidoran♀), konversi rumus
+  growth rate, label & urutan game / item / kondisi encounter, dan migrasi cache v1 → v2.
 
   ```bash
   cd pokedex-app && npm test
@@ -252,10 +326,22 @@ APK debug tanpa optimasi ini 236,8 MB.
 
 - **Manual di perangkat fisik** (Samsung Galaxy A54, Android 16): semua halaman, pencarian, filter
   gabungan (Gen I + Fire = 12), urutan, favorit, prev/next, sheet ability, pull-to-refresh, hapus cache,
-  tab bar saat keyboard muncul, dan scroll sampai item terakhir.
+  tab bar saat keyboard muncul, dan scroll sampai item terakhir. Layar v2 (build debug): Jelajah, Region
+  → Kanto → Viridian Forest, Pal Park, Game, Pokédex regional (ganti Pokédex), Kelompok (Egg & Gender),
+  Nature (baris dibuka), Growth rate (Medium Slow & Erratic), Kontes, Pemicu evolusi, Metode encounter,
+  serta Detail Pokémon v2 (About, Stats + sheet, Moves, Lokasi) untuk Pikachu, Pichu, dan Charmander.
 - **APK release (R8 aktif)** di perangkat yang sama: app terbuka tanpa crash, data PokéAPI & gambar
   termuat (konfigurasi `.env` tidak rusak oleh R8), favorit dari versi sebelumnya tetap ada,
   ikon adaptive Pikachu terpasang.
+- **v0.2.0 — audit desain vs aplikasi**: ke-44 layar di `design/pokedex.pen` dicocokkan dengan aplikasi di
+  perangkat (label teks diekstrak dari desain lalu dicari di kode, layar v2 dibandingkan visual satu per
+  satu). Hasilnya diperbaiki: Splash (progress bar + kredit), kolom *Suka* di Nature, nomor regional +
+  nasional di Pokédex regional, urutan kantong/kategori Item, label kondisi encounter, urutan lokasi
+  Pokémon, kategori efek move, dan bagian *Efek saat dipegang* item. Ditemukan juga crash daftar Berry
+  (data PokéAPI `null` untuk berry generasi baru) dan nama Pokémon dari slug bentuk bawaan.
+- **v0.2.0 di APK release**: Splash tanpa kilasan warna (latar window Android = merah brand), ganti bahasa
+  data (Jepang, Prancis, Ceko) di Lainnya → nama/kategori/deskripsi/ability di Detail ikut berubah,
+  versi data PokéAPI, hapus cache, daftar Berry sampai akhir, dan layar v2 lainnya.
 - **Kelancaran scroll** grid Pokédex (APK release, layar 120 Hz, `dumpsys gfxinfo`, fling naik-turun):
 
   | Kondisi | Frame janky | Median | p90 |
@@ -270,12 +356,14 @@ APK debug tanpa optimasi ini 236,8 MB.
 
 ## Keterbatasan & langkah berikutnya
 
+- Mode offline layar v2 belum diuji ulang di perangkat (pola error/cache-nya sama dengan v1).
 - **iOS belum diuji di perangkat/simulator** — kode tidak memakai API khusus Android, tapi belum diverifikasi.
 - Offline diuji dengan memblokir jaringan app (firewall Android), belum dengan mode pesawat sungguhan
   karena perangkat uji terhubung lewat ADB nirkabel.
 - Scroll pertama kali masih lebih berat (33% frame janky) karena tipe kartu diunduh sambil menggulir;
   scroll berikutnya memakai cache.
-- Deskripsi Pokémon & efek ability hanya tersedia dalam bahasa Inggris dari PokéAPI.
+- Nama di kartu grid tetap bahasa Inggris (dibentuk dari index tanpa request per kartu); nama dalam
+  bahasa data tampil di halaman detail. Bahasa Čeština hampir tidak punya data di PokéAPI (*tidak resmi*).
 - Suara Pokémon (`cries`) tidak ditampilkan — formatnya `.ogg`, tidak didukung native di iOS.
 - GraphQL PokéAPI masih beta dan tidak stabil saat dicek, jadi app memakai REST.
 - Belum ada test komponen / end-to-end (mis. React Native Testing Library, Maestro).
