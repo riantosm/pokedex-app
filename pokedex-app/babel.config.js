@@ -1,0 +1,22 @@
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: [
+    [
+      'module-resolver',
+      {
+        root: ['.'],
+        alias: { '@': './src' },
+        extensions: [
+          '.ios.js',
+          '.android.js',
+          '.js',
+          '.jsx',
+          '.json',
+          '.ts',
+          '.tsx',
+        ],
+      },
+    ],
+    'react-native-worklets/plugin', // reanimated 4: WAJIB paling akhir
+  ],
+};
