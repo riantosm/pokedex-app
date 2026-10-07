@@ -1,9 +1,11 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AppText from '@/components/atoms/AppText';
 import PressableScale from '@/components/atoms/PressableScale';
 import { colors } from '@/theme/colors';
 import { shadows } from '@/theme/shadows';
+import { fonts } from '@/theme/typography';
 
 const ICON_SIZE = 22;
 
@@ -51,11 +53,13 @@ export default function TabBar({
               style={[styles.item, focused && styles.itemActive]}
             >
               {options.tabBarIcon?.({ focused, color, size: ICON_SIZE })}
-              <Text
-                style={[styles.label, focused && styles.labelActive, { color }]}
+              <AppText
+                variant="tab"
+                color={color}
+                style={focused && styles.labelActive}
               >
                 {label}
-              </Text>
+              </AppText>
             </PressableScale>
           );
         })}
@@ -90,11 +94,7 @@ const styles = StyleSheet.create({
   itemActive: {
     backgroundColor: colors.brandSoft,
   },
-  label: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
   labelActive: {
-    fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 });

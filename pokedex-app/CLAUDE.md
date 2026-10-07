@@ -85,13 +85,34 @@ Sheet Urutkan & Filter dan sheet Ability = komponen `organisms/`, bukan route.
 - Semua warna dari `theme/colors.ts`. Latar kartu/hero per tipe: `typeCardColors[type]`,
   teks di atasnya: `typeOnColor(type)` (tipe terang pakai teks gelap — aturan kontras di BRIEF §6).
 - Semua yang bisa di-tap pakai `atoms/PressableScale`. Preset animasi di `utils/motion.ts`.
-- Font desain: **Poppins** (judul) + **Inter** (teks) — **belum dipasang** (perlu aset font native).
+- Semua teks pakai `atoms/AppText` dengan `variant` dari `theme/typography.ts`
+  (Poppins untuk judul, Inter untuk teks). Ketebalan dipilih lewat `fontFamily`, **jangan `fontWeight`**
+  (di Android custom font + fontWeight bisa jatuh ke font sistem).
+- Font di `src/assets/fonts` (lisensi OFL ikut di sana), di-link dengan `npx react-native-asset`
+  (config: `react-native.config.js`). Tambah font baru → jalankan ulang perintah itu lalu rebuild.
+- Permukaan berwarna tipe (kartu, hero, tile) pakai `typePalette(type)`; saat tipe belum dimuat `neutralPalette`.
+
+### Komponen
+
+| Lapisan | Komponen |
+|---|---|
+| atoms | `AppText`, `Button`, `IconButton`, `PressableScale`, `PokeballIcon`, `Skeleton`, `TypeBadge` |
+| molecules | `PokemonCard`, `TypeChip`, `SearchField`, `StatRow`, `EmptyState`, `SectionHeader` |
+| organisms | `TabBar`, `BottomSheet` |
+| templates | `MainLayout`, `PlaceholderLayout` (sementara) |
+
+### Patch
+
+- `patches/@d11+react-native-fast-image+8.13.0.patch`: tipe `ImageStyle` FastImage merujuk
+  `FlexStyle`/`ShadowStyleIOS` yang sudah tidak diekspor RN 0.87 → diganti `ImageStyle` RN.
+  Saat membuat patch, kecualikan artefak build: `--exclude '^android/build|/build/|package\.json$'`.
 
 ## Status
 
 - [x] Init: navigasi, store, service, utils + test, theme, tab bar custom, layar placeholder.
-- [ ] Pasang font Poppins + Inter.
-- [ ] Implementasi UI per layar sesuai desain (lalu hapus `templates/PlaceholderLayout`).
+- [x] Fondasi UI: font Poppins + Inter, tipografi, komponen dasar.
+- [ ] Pokédex (Home) · [ ] Detail Pokémon · [ ] Tipe & Detail Tipe · [ ] Favorit & Lainnya · [ ] Polish + README
+  (setelah semua layar jadi, hapus `templates/PlaceholderLayout`).
 
 Setiap perubahan yang terlihat pengguna → tambah bullet di `documentation/CHANGELOG.md`
 bagian `## Belum dirilis`. Update file ini saat ada layar, fitur, atau konvensi baru.

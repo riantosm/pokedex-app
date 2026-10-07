@@ -11,3 +11,7 @@ Kategori tanpa isi boleh dihilangkan.
 ---
 
 ## Belum dirilis
+
+### Baru
+
+- Tampilan memakai font Poppins (judul) dan Inter (teks) sesuai desain.

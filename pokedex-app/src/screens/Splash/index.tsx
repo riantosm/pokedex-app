@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import AppText from '@/components/atoms/AppText';
 import PokeballIcon from '@/components/atoms/PokeballIcon';
 import { ROUTES } from '@/navigation/paths';
 import type { RootStackScreenProps } from '@/navigation/types';
@@ -24,8 +25,12 @@ export default function Splash({
   return (
     <View style={styles.root}>
       <PokeballIcon size={84} color={colors.white} strokeWidth={1.6} />
-      <Text style={styles.title}>Pokédex</Text>
-      <Text style={styles.caption}>Memuat data 1.025 Pokémon…</Text>
+      <AppText variant="heroTitle" color={colors.white} style={styles.title}>
+        Pokédex
+      </AppText>
+      <AppText variant="caption" color={colors.white} style={styles.caption}>
+        Memuat data 1.025 Pokémon…
+      </AppText>
     </View>
   );
 }
@@ -40,12 +45,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
-    fontWeight: '700',
-    color: colors.white,
+    lineHeight: 44,
   },
   caption: {
-    fontSize: 13,
-    color: colors.white,
     opacity: 0.8,
   },
 });

@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from 'react-native';
+import AppText from '@/components/atoms/AppText';
 import Button from '@/components/atoms/Button';
 import PlaceholderLayout from '@/components/templates/PlaceholderLayout';
 import { ROUTES } from '@/navigation/paths';
@@ -22,7 +22,9 @@ export default function PokemonList({
       title="Pokédex"
       description="Header merah, cari, urutkan, chip filter tipe, grid 2 kolom + infinite scroll."
     >
-      <Text style={styles.status}>{status}</Text>
+      <AppText variant="callout" color={colors.ink3}>
+        {status}
+      </AppText>
       <Button
         label="Buka Charmander"
         variant="secondary"
@@ -37,10 +39,3 @@ export default function PokemonList({
     </PlaceholderLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  status: {
-    fontSize: 14,
-    color: colors.ink3,
-  },
-});

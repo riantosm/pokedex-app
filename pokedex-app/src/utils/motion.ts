@@ -9,3 +9,13 @@ export const pressSpring: WithSpringConfig = {
   stiffness: 320,
   mass: 0.6,
 };
+
+/** Denyut skeleton: bolak-balik opacity 1 → 0,45. */
+export const skeletonPulse = {
+  minOpacity: 0.45,
+  timing: { duration: 800 },
+};
+
+/** Durasi buka / tutup bottom sheet (ms). */
+export const SHEET_OPEN_MS = 280;
+export const SHEET_CLOSE_MS = 220;

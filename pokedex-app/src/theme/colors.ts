@@ -78,3 +78,46 @@ const LIGHT_TYPES: readonly PokemonTypeName[] = [
 /** Warna teks di atas `typeCardColors[type]`. */
 export const typeOnColor = (type: PokemonTypeName): string =>
   LIGHT_TYPES.includes(type) ? colors.ink : colors.white;
+
+export interface TypePalette {
+  /** Latar kartu / hero. */
+  background: string;
+  /** Teks utama (nama). */
+  text: string;
+  /** Teks sekunder (nomor, jumlah). */
+  textMuted: string;
+  /** Latar pill tipe di atas `background`. */
+  pill: string;
+  /** Watermark cincin pokéball. */
+  ring: string;
+}
+
+const ON_DARK = {
+  textMuted: '#FFFFFFB3',
+  pill: '#FFFFFF33',
+  ring: '#FFFFFF2E',
+};
+const ON_LIGHT = {
+  textMuted: '#1B1B1F99',
+  pill: '#1B1B1F14',
+  ring: '#FFFFFF59',
+};
+
+/** Semua warna turunan untuk permukaan bertipe (kartu, hero, tile tipe). */
+export function typePalette(type: PokemonTypeName): TypePalette {
+  const light = LIGHT_TYPES.includes(type);
+  return {
+    background: typeCardColors[type],
+    text: light ? colors.ink : colors.white,
+    ...(light ? ON_LIGHT : ON_DARK),
+  };
+}
+
+/** Palet kartu saat tipe belum diketahui (data detail masih dimuat). */
+export const neutralPalette: TypePalette = {
+  background: colors.skeleton,
+  text: colors.ink,
+  textMuted: colors.ink3,
+  pill: colors.skeletonHighlight,
+  ring: '#FFFFFF80',
+};

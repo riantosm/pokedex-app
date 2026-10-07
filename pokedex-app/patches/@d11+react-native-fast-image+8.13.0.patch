@@ -1,0 +1,15 @@
+diff --git a/node_modules/@d11/react-native-fast-image/dist/index.d.ts b/node_modules/@d11/react-native-fast-image/dist/index.d.ts
+index 2332172..2f92e7f 100644
+--- a/node_modules/@d11/react-native-fast-image/dist/index.d.ts
++++ b/node_modules/@d11/react-native-fast-image/dist/index.d.ts
+@@ -49,7 +49,9 @@ export interface OnErrorEvent {
+         error: string;
+     };
+ }
+-export interface ImageStyle extends FlexStyle, TransformsStyle, ShadowStyleIOS {
++export interface ImageStyle extends Omit<import('react-native').ImageStyle, keyof ImageStyleOverrides>, ImageStyleOverrides {
++}
++interface ImageStyleOverrides {
+     backfaceVisibility?: 'visible' | 'hidden';
+     borderBottomLeftRadius?: number;
+     borderBottomRightRadius?: number;

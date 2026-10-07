@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import AppText from '@/components/atoms/AppText';
 import MainLayout from '@/components/templates/MainLayout';
 import { colors } from '@/theme/colors';
 
@@ -19,8 +20,8 @@ export default function PlaceholderLayout({
   return (
     <MainLayout>
       <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <AppText variant="screenTitle">{title}</AppText>
+        <AppText color={colors.ink2}>{description}</AppText>
         {children}
       </View>
     </MainLayout>
@@ -33,15 +34,5 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 20,
     paddingTop: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.ink,
-  },
-  description: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.ink2,
   },
 });

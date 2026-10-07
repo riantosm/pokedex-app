@@ -1,0 +1,107 @@
+import { memo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import FastImage from '@d11/react-native-fast-image';
+import AppText from '@/components/atoms/AppText';
+import PressableScale, {
+  type PressableScaleProps,
+} from '@/components/atoms/PressableScale';
+import Skeleton from '@/components/atoms/Skeleton';
+import TypeBadge from '@/components/atoms/TypeBadge';
+import { neutralPalette, typePalette } from '@/theme/colors';
+import type { PokemonTypeName } from '@/types';
+import { formatDexNumber, formatName } from '@/utils/format';
+import { artworkUrl } from '@/utils/pokemon';
+
+export const POKEMON_CARD_HEIGHT = 132;
+
+export interface PokemonCardProps
+  extends Omit<PressableScaleProps, 'children' | 'id'> {
+  id: number;
+  name: string;
+  /** `undefined` = tipe belum dimuat → kartu netral + skeleton pill. */
+  types?: PokemonTypeName[];
+}
+
+/** Desain: `Card/Pokemon`. Warna kartu mengikuti tipe pertama. */
+function PokemonCard({ id, name, types, style, ...rest }: PokemonCardProps) {
+  const primary = types?.[0];
+  const palette = primary ? typePalette(primary) : neutralPalette;
+  const displayName = formatName(name);
+
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityLabel={`${displayName}, nomor ${id}${
+        types ? `, tipe ${types.join(' dan ')}` : ''
+      }`}
+      style={[styles.card, { backgroundColor: palette.background }, style]}
+      {...rest}
+    >
+      <View style={[styles.ring, { borderColor: palette.ring }]} />
+      <View style={styles.artwork} pointerEvents="none">
+        <FastImage
+          source={{ uri: artworkUrl(id) }}
+          style={styles.fill}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+      </View>
+      <AppText variant="label" color={palette.textMuted}>
+        {formatDexNumber(id)}
+      </AppText>
+      <AppText variant="cardTitle" color={palette.text} numberOfLines={1}>
+        {displayName}
+      </AppText>
+      <View style={styles.types}>
+        {types && primary ? (
+          types.map(t => (
+            <TypeBadge key={t} type={t} tone="onColor" surfaceType={primary} />
+          ))
+        ) : (
+          <Skeleton width={52} height={22} radius={11} />
+        )}
+      </View>
+    </PressableScale>
+  );
+}
+
+export default memo(PokemonCard);
+
+const RING = 104;
+const ART = 84;
+
+const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+    height: POKEMON_CARD_HEIGHT,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    gap: 4,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  ring: {
+    position: 'absolute',
+    right: -28,
+    bottom: -28,
+    width: RING,
+    height: RING,
+    borderRadius: RING / 2,
+    borderWidth: 20,
+  },
+  artwork: {
+    position: 'absolute',
+    right: 6,
+    bottom: 2,
+    width: ART,
+    height: ART,
+  },
+  fill: {
+    width: ART,
+    height: ART,
+  },
+  types: {
+    gap: 5,
+    paddingTop: 4,
+    alignItems: 'flex-start',
+  },
+});
