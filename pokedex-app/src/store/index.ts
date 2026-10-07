@@ -15,9 +15,11 @@ import {
 } from 'redux-persist';
 import { pokeApi } from '@/services/api/pokeApi';
 import favoritesReducer from './slices/favoritesSlice';
+import networkReducer from './slices/networkSlice';
 
 const rootReducer = combineReducers({
   favorites: favoritesReducer,
+  network: networkReducer,
   [pokeApi.reducerPath]: pokeApi.reducer,
 });
 

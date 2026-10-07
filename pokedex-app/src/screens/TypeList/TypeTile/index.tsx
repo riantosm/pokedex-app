@@ -37,6 +37,7 @@ function TypeTile({ type, index, width, onPress }: TypeTileProps) {
       >
         <View style={styles.art} pointerEvents="none">
           <FastImage
+            key={data ? 'ready' : 'pending'}
             source={{ uri: artworkUrl(TYPE_REPRESENTATIVE[type]) }}
             style={styles.artImage}
             resizeMode={FastImage.resizeMode.contain}

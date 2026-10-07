@@ -218,8 +218,10 @@ Grid Pokédex bisa berisi ratusan kartu bergambar. Yang dilakukan supaya scroll 
 | Koneksi kembali | Penanda "Kembali online", query yang aktif diambil ulang otomatis (`refetchOnReconnect`). |
 | Pull-to-refresh saat offline | Data lama tetap tampil (tidak diganti error). |
 
-Deteksi memakai `@react-native-community/netinfo` — dianggap offline kalau tidak terhubung **atau**
-terhubung tapi internet tidak terjangkau (mis. Wi-Fi tanpa internet).
+Dianggap offline kalau `@react-native-community/netinfo` melaporkan tidak terhubung / internet tidak
+terjangkau, **atau** request PokéAPI terakhir gagal tanpa response (mis. Wi-Fi tanpa internet, DNS gagal) —
+penanda hilang lagi begitu ada request yang berhasil. Gambar yang gagal dimuat saat offline dicoba ulang
+otomatis setelah datanya berhasil dimuat.
 
 ## Ukuran APK
 
@@ -240,9 +242,9 @@ APK debug tanpa optimasi ini 236,8 MB.
 
 ## Pengujian
 
-- **Unit test (Jest)** — 26 test untuk logika murni: format satuan PokéAPI (dm → m, hg → kg), parsing
+- **Unit test (Jest)** — 31 test untuk logika murni: format satuan PokéAPI (dm → m, hg → kg), parsing
   URL, rasio gender, cari/filter/urut, efektivitas tipe (termasuk dual-type, mis. Bulbasaur ×¼ terhadap
-  Grass), dan perataan pohon evolusi (termasuk cabang Eevee).
+  Grass), perataan pohon evolusi (termasuk cabang Eevee), dan deteksi PokéAPI tidak terjangkau.
 
   ```bash
   cd pokedex-app && npm test
@@ -261,15 +263,16 @@ APK debug tanpa optimasi ini 236,8 MB.
   | Data tipe kartu sudah ter-cache | 10,7% | 11 ms | 21 ms |
   | Pertama kali (tipe kartu masih diunduh) | 33,0% | 19 ms | 32 ms |
 
-- **Offline** (akses jaringan app diblokir lewat firewall Android): Home tetap menampilkan data cache;
-  detail yang belum pernah dibuka menampilkan state *Detail gagal dimuat*, dan *Coba lagi* memulihkannya
-  setelah jaringan kembali.
+- **Offline** (akses jaringan app diblokir lewat firewall Android): penanda *Offline · menampilkan data
+  tersimpan* muncul, Home tetap menampilkan data cache, kartu yang belum tersimpan tampil netral, detail
+  yang belum pernah dibuka menampilkan *Detail gagal dimuat*. Setelah jaringan kembali, *Coba lagi*
+  memuat data **dan** artwork-nya, lalu muncul penanda *Kembali online*.
 
 ## Keterbatasan & langkah berikutnya
 
 - **iOS belum diuji di perangkat/simulator** — kode tidak memakai API khusus Android, tapi belum diverifikasi.
-- Penanda *Offline* mengikuti status koneksi sistem (NetInfo); belum diuji dengan mode pesawat
-  sungguhan karena perangkat uji terhubung lewat ADB nirkabel.
+- Offline diuji dengan memblokir jaringan app (firewall Android), belum dengan mode pesawat sungguhan
+  karena perangkat uji terhubung lewat ADB nirkabel.
 - Scroll pertama kali masih lebih berat (33% frame janky) karena tipe kartu diunduh sambil menggulir;
   scroll berikutnya memakai cache.
 - Deskripsi Pokémon & efek ability hanya tersedia dalam bahasa Inggris dari PokéAPI.

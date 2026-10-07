@@ -42,7 +42,9 @@ function PokemonCard({ id, name, types, style, ...rest }: PokemonCardProps) {
     >
       <View style={[styles.ring, { borderColor: palette.ring }]} />
       <View style={styles.artwork} pointerEvents="none">
+        {/* Remount saat tipe tiba → gambar yang gagal dimuat saat offline dicoba ulang. */}
         <FastImage
+          key={types ? 'ready' : 'pending'}
           source={{ uri: artworkUrl(id) }}
           style={styles.fill}
           resizeMode={FastImage.resizeMode.contain}

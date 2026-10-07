@@ -143,7 +143,9 @@ export default function DetailHero({
         <View style={[styles.ring, { borderColor: palette.ring }]} />
         <View style={styles.sheetTop} />
         <Animated.View style={[styles.art, artStyle]} pointerEvents="none">
+          {/* Remount saat tipe tiba → artwork yang gagal dimuat saat offline dicoba ulang. */}
           <FastImage
+            key={types ? 'ready' : 'pending'}
             source={{ uri: artworkUrl(id) }}
             style={styles.artImage}
             resizeMode={FastImage.resizeMode.contain}

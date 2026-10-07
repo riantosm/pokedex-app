@@ -82,9 +82,12 @@ Sheet Urutkan & Filter dan sheet Ability = komponen `organisms/`, bukan route.
   = id Pokémon untuk 1–1025 (sudah dicek 50 sampel termasuk Unown, Wormadam, Arceus, Ogerpon).
   `usePokemonTypes` → `undefined` (memuat) / `null` (gagal, mis. offline) / array.
 - **Offline**: `@react-native-community/netinfo` disambungkan ke `setupListeners` RTK Query
-  (`refetchOnReconnect`). `useIsOffline()` = tidak terhubung **atau** internet tak terjangkau.
+  (`refetchOnReconnect`). `useIsOffline()` = NetInfo tidak terhubung / internet tak terjangkau **atau**
+  `networkSlice.apiUnreachable` (request PokéAPI terakhir gagal tanpa response; reset saat ada request sukses).
   `organisms/OfflineBanner` global di `App.tsx`. Error UI hanya muncul kalau `isError && !data`
   (data cache tetap ditampilkan).
+- `FastImage` di kartu/hero/evolusi/tile memakai `key` yang berubah saat data tiba → gambar yang gagal
+  dimuat saat offline dicoba ulang otomatis.
 - Grid: animasi muncul hanya sekali per id (`seenIds`), `removeClippedSubviews` di Android,
   batch render kecil (`initialNumToRender`/`maxToRenderPerBatch` 6, `windowSize` 5).
 - PokéAPI menolak request **tanpa User-Agent** (403). Di RN sudah otomatis; ingat saat bikin script.

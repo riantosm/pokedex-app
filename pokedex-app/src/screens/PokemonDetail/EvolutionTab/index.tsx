@@ -102,6 +102,7 @@ function EvolutionRow({ step, current, accent, onPress }: EvolutionRowProps) {
     >
       <View style={[styles.thumb, current && styles.thumbCurrent]}>
         <FastImage
+          key={types ? 'ready' : 'pending'}
           source={{ uri: artworkUrl(step.id) }}
           style={styles.thumbImage}
           resizeMode={FastImage.resizeMode.contain}

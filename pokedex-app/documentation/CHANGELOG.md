@@ -34,3 +34,8 @@ Kategori tanpa isi boleh dihilangkan.
 - Pokédex: scroll lebih mulus — data tipe di kartu ±10× lebih ringan dan render grid dioptimalkan.
 - Ukuran APK lebih kecil tanpa mengurangi fitur.
 - Tampilan memakai font Poppins (judul) dan Inter (teks) sesuai desain.
+
+### Perbaikan
+
+- Gambar Pokémon yang gagal dimuat saat offline kini muncul begitu datanya berhasil dimuat ulang.
+- Penanda Offline juga muncul saat PokéAPI tidak bisa dihubungi (mis. Wi-Fi tanpa internet).
