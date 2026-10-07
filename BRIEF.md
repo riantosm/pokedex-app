@@ -92,7 +92,7 @@ Grid 18 tipe dengan warna masing-masing.
 
 | Data | API |
 |---|---|
-| Daftar tipe | `GET /type` (buang `unknown`, `stellar`, `shadow`) |
+| Daftar tipe | — (18 tipe tetap di app, `POKEMON_TYPE_NAMES`; `GET /type` berisi juga `unknown`, `stellar`, `shadow`) |
 
 ### 3.7 Detail Tipe
 Header warna tipe, ringkasan efektivitas (kuat terhadap / lemah terhadap / kebal), lalu daftar Pokémon bertipe tersebut.
@@ -118,7 +118,6 @@ Tentang aplikasi, kredit sumber data (PokéAPI), versi app, tombol hapus cache.
 | `GET /pokemon-form/{id}` | Kartu (tipe) |
 | `GET /pokemon-species/{id}` | Detail (deskripsi, genus, gender, habitat, evolusi) |
 | `GET /evolution-chain/{id}` | Detail — tab Evolusi |
-| `GET /type` | Halaman Tipe |
 | `GET /type/{name}` | Filter tipe, Detail Tipe, kelemahan |
 | `GET /generation/{id}` | Filter generasi |
 | `GET /ability/{name}` | Sheet Ability |
@@ -172,3 +171,89 @@ Desain harus terasa dibuat untuk *produk ini*, bukan template generik:
 | 9 | Lainnya | — |
 
 Ukuran layar: iPhone 390 × 844. Komponen dasar (kartu Pokémon, chip tipe, bar stat, tab bar, tombol) dibuat sebagai komponen reusable di pen.dev.
+
+---
+
+# Versi 2 — Semua resource PokéAPI
+
+> Status: **desain selesai** di `design/pokedex.pen` (section 05–09). **Implementasi selesai** untuk semua
+> layar (rilis v0.2.0).
+> Gaya visual sama dengan v1 (Classic Red, komponen yang sama). Data di mockup diambil dari API asli.
+
+## 8. Perubahan navigasi
+
+- Tab **Tipe → Jelajah** (ikon kompas). Tetap 4 tab: Pokédex · Jelajah · Favorit · Lainnya.
+- Halaman Tipe & Detail Tipe v1 sekarang dibuka dari tile **Tipe** di Jelajah (stack, dengan tombol kembali).
+- Detail Pokémon punya 6 tab: **About · Stats · Moves · Evolusi · Lokasi · Lemah** (label "Kelemahan" dipendekkan
+  agar 6 tab muat tanpa scroll).
+
+```
+Jelajah
+├── Data utama: Tipe · Moves · Item · Berry
+├── Dunia: Region & lokasi (+ Pal Park) · Game & generasi · Pokédex regional
+├── Kelompok Pokémon: Egg group · Warna · Bentuk · Habitat · Gender · Growth rate
+└── Referensi: Nature · Kontes · Pemicu evolusi · Metode encounter
+Lainnya: + Bahasa data (sheet 14 bahasa) · + Versi data PokéAPI
+```
+
+## 9. Layar v2 & API
+
+| # | Layar (frame di pen.dev) | API |
+|---|---|---|
+| 1 | **Jelajah** (hub) | jumlah dari `count` tiap resource list |
+| 2 | **Lainnya v2** + **Sheet Bahasa data** | `language` (`official` → label "tidak resmi"), `meta` (tanggal deploy data) |
+| 3 | **Detail v2 · About** — egg group / habitat / warna / bentuk / growth rate bisa ditap, nomor Pokédex regional | `pokemon-species` (`egg_groups`, `habitat`, `color`, `shape`, `growth_rate`, `pokedex_numbers`) |
+| 4 | **Detail v2 · Moves** — pilih grup versi, segmen Level / TM / Telur / Tutor | `pokemon.moves[].version_group_details`, `move`, `move-learn-method`, `version-group`, `move-damage-class` |
+| 5 | **Detail v2 · Lokasi** — per area & game: metode, level, peluang, kondisi | `/pokemon/{id}/encounters`, `location-area`, `version`, `encounter-method`, `encounter-condition(-value)` |
+| 6 | **Sheet Stat** — nature naik/turun, move penaik stat, karakteristik IV | `stat`, `nature`, `characteristic` |
+| 7 | **Moves · Daftar** — cari, Fisik/Khusus/Status, filter tipe | `move` (list + detail), `move-damage-class`, `type` |
+| 8 | **Move · Detail** — power/akurasi/PP/prioritas, efek, target, TM per game, kontes, dipelajari oleh | `move`, `move-ailment`, `move-category`, `move-target`, `machine`, `contest-type`, `contest-effect`, `super-contest-effect` |
+| 9 | **Item · Daftar** — per kantong, harga terbaru | `item`, `item-pocket`, `item-category` |
+| 10 | **Item · Detail** — harga beli/jual per versi, atribut, fling, efek | `item`, `item-attribute`, `item-fling-effect`, `currency` |
+| 11 | **Berry · Daftar** — filter rasa | `berry`, `berry-flavor`, `berry-firmness` |
+| 12 | **Berry · Detail** — efek, 5 rasa ↔ kategori kontes, data tanam, Natural Gift | `berry`, `berry-flavor`, `berry-firmness`, `contest-type`, `item` |
+| 13 | **Region · Daftar** + Pal Park | `region`, `pal-park-area` |
+| 14 | **Region · Detail** — game, Pokédex, lokasi (kota/rute/lainnya) | `region`, `version-group`, `pokedex`, `location` |
+| 15 | **Lokasi · Detail** — Pokémon per versi + peluang & level | `location`, `location-area`, `version`, `encounter-method` |
+| 16 | **Game & Generasi** | `generation`, `version-group`, `version` |
+| 17 | **Pokédex regional** — nomor regional + nasional | `pokedex` |
+| 18 | **Kelompok Pokémon** — segmen Egg / Warna / Bentuk / Habitat / Gender | `egg-group`, `pokemon-color`, `pokemon-shape`, `pokemon-habitat`, `gender` |
+| 19 | **Nature** — stat ▲▼, suka/benci rasa, Pokéathlon, gaya bertarung | `nature`, `stat`, `berry-flavor`, `pokeathlon-stat`, `move-battle-style` |
+| 20 | **Growth rate** — EXP sampai level 100, rumus, grafik | `growth-rate` |
+| 21 | **Kontes** | `contest-type`, `berry-flavor` |
+| 22 | **Pemicu evolusi** + variabel tersembunyi | `evolution-trigger`, `evolution-variable` |
+| 23 | **Metode encounter** + kondisi | `encounter-method`, `encounter-condition`, `encounter-condition-value` |
+| 24 | **Kelompok Pokémon · Gender** — betina saja (37) / jantan saja (26) / tanpa gender (155) / campuran (807), sebaran rasio, Pokémon yang gendernya jadi syarat evolusi | `gender` (`pokemon_species_details`, `required_for_evolution`) |
+| 25 | **Pal Park** — per area (Forest 93, Field 162, Mountain 140, Pond 44, Sea 54): skor Catching Show & peluang | `pal-park-area` |
+| 26 | **Item · Detail (Flame Orb)** — Fling: power + efek (Burn), efek fling lain, Pokémon liar yang memegang | `item`, `item-fling-effect`, `item-category` |
+
+## 10. Cakupan resource (51/51)
+
+> Di desain 51/51. Di aplikasi **51/51** sejak v0.2.0.
+
+| Grup | Resource | Dipakai di |
+|---|---|---|
+| Pokémon | `pokemon`, `pokemon-form`, `pokemon-species`, `ability`, `type`, `stat`, `characteristic`, `nature`, `pokeathlon-stat`, `egg-group`, `gender`, `growth-rate`, `pokemon-color`, `pokemon-shape`, `pokemon-habitat` | v1 + layar 3, 6, 18–20 |
+| Evolusi | `evolution-chain`, `evolution-trigger`, `evolution-variable` | v1 tab Evolusi, layar 22 |
+| Moves | `move`, `move-ailment`, `move-battle-style`, `move-category`, `move-damage-class`, `move-learn-method`, `move-target`, `machine` | layar 4, 7, 8, 19 |
+| Kontes | `contest-type`, `contest-effect`, `super-contest-effect` | layar 8, 12, 21 |
+| Item | `item`, `item-attribute`, `item-category`, `item-fling-effect`, `item-pocket`, `currency` | layar 9, 10 |
+| Berry | `berry`, `berry-firmness`, `berry-flavor` | layar 11, 12, 19 |
+| Lokasi | `region`, `location`, `location-area`, `pal-park-area`, `encounter-method`, `encounter-condition`, `encounter-condition-value` | layar 5, 13–15, 23 |
+| Game | `generation`, `version`, `version-group`, `pokedex` | v1 filter generasi, layar 4, 14, 16, 17 |
+| Utilitas | `language`, `meta` | layar 2 |
+
+## 11. Temuan data yang mempengaruhi implementasi
+
+- **`item.prices`** (bukan `cost`) — harga per grup versi + `currency`; banyak item tidak punya harga
+  (mis. Poké Ball, Potion, Flame Orb). Kosong = *tidak ada data*, bukan *tidak dijual* — tampilkan "Tidak ada data harga".
+- **Sprite item**: `sprites/items/dream-world/{name}.png` (±90 px) jauh lebih tajam dari default 30 px,
+  tapi tidak tersedia untuk semua item → fallback ke sprite default.
+- **Nama tampilan ≠ slug**: pakai `names[]` sesuai bahasa data (mis. egg group `ground` = "Field",
+  `indeterminate` = "Amorphous", `slow-then-very-fast` = "Erratic").
+- **PokéAPI tidak punya flag "kontak"** pada move — tidak ditampilkan.
+- **Bahasa data**: 14 bahasa, tanpa Indonesia. Teks tanpa terjemahan → fallback Inggris. Font app di-subset
+  ke Latin, jadi nama Jepang/Korea/Mandarin memakai font sistem (fallback otomatis OS).
+- **Encounter** dikelompokkan per `location_area` lalu per versi; Pikachu: 40 area di 33 game.
+- **Payload besar**: `move` list 937, `item` 2.223, `location` 1.104 → daftar memakai paginasi API
+  (`limit/offset`) + cari di index nama (sama seperti Pokédex), detail dimuat lazy.
