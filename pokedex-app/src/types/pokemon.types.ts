@@ -11,6 +11,16 @@ export interface PokemonTypeSlot {
   type: NamedAPIResource;
 }
 
+/**
+ * `GET /pokemon-form/{id}` — hanya field yang dipakai. Untuk id 1–1025 form default ber-id sama
+ * dengan Pokémon-nya, dan payload-nya ±10× lebih kecil dari `/pokemon/{id}` (tanpa `moves`).
+ */
+export interface PokemonForm {
+  id: number;
+  name: string;
+  types: PokemonTypeSlot[];
+}
+
 export interface PokemonStat {
   base_stat: number;
   effort: number;

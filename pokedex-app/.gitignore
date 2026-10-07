@@ -77,6 +77,8 @@ yarn-error.log
 # react-native-config
 .env
 
-# APK yang otomatis disalin ke documentation/ oleh assembleDebug/Release
+# APK yang otomatis disalin ke documentation/ oleh assembleDebug/Release.
+# APK release DI-COMMIT (tombol download di README root); debug tetap diabaikan.
 documentation/*.apk
+!documentation/*-release.apk
 documentation/output-metadata.json

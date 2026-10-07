@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Render documentation/changelog.html dari _changelog.template.html + CHANGELOG.md.
+"""Render documentation/changelog.html dari _changelog.template.html + CHANGELOG.md,
+lalu perbarui tombol download APK di README root (blok <!-- apk-download --> … <!-- /apk-download -->).
 
 Hasilnya satu file HTML self-contained (markdown di-inline) yang bisa dibuka offline.
 Jalankan setiap kali CHANGELOG.md berubah:
@@ -8,6 +9,7 @@ Jalankan setiap kali CHANGELOG.md berubah:
 """
 import pathlib
 import re
+from urllib.parse import quote
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -16,6 +18,8 @@ CHANGELOG_TEMPLATE = HERE / "_changelog.template.html"
 CHANGELOG_OUT = HERE / "changelog.html"
 CHANGELOG = HERE / "CHANGELOG.md"
 BUILD_GRADLE = ROOT / "android" / "app" / "build.gradle"
+README = ROOT.parent / "README.md"
+REPO_RAW = "https://github.com/riantosm/pokedex-app/raw/main/pokedex-app/documentation/"
 
 # Nama app di heading teks "Salin" — harus sama dengan template (copyTextFor) dan outputFileName gradle.
 APP_NAME = "PokedexApp"
@@ -110,6 +114,26 @@ def apk_name():
     return ""
 
 
+def update_readme_download(apk):
+    """Arahkan tombol download di README root ke APK release versi terbaru."""
+    if not apk or not README.exists():
+        return
+    match = re.search(r"-v([0-9.]+)\(", apk)
+    version = match.group(1) if match else ""
+    url = REPO_RAW + quote(apk)
+    block = (
+        "<!-- apk-download -->\n"
+        f'<a href="{url}"><img alt="Download APK v{version}" '
+        f'src="https://img.shields.io/badge/Download%20APK-v{version}-DC0A2D?style=for-the-badge&logo=android&logoColor=white" /></a>\n'
+        "<!-- /apk-download -->"
+    )
+    text = README.read_text(encoding="utf-8")
+    new = re.sub(r"<!-- apk-download -->.*?<!-- /apk-download -->", lambda _: block, text, flags=re.S)
+    if new != text:
+        README.write_text(new, encoding="utf-8")
+        print(f"updated {README.name} download -> {apk}")
+
+
 changelog_md = guard_no_script(CHANGELOG.read_text(encoding="utf-8"), CHANGELOG.name)
 guard_changelog_copy_length(changelog_md)
 changelog_html = (
@@ -119,3 +143,4 @@ changelog_html = (
 )
 CHANGELOG_OUT.write_text(changelog_html, encoding="utf-8")
 print(f"wrote {CHANGELOG_OUT.relative_to(ROOT)} ({len(changelog_html):,} bytes)")
+update_readme_download(apk_name())

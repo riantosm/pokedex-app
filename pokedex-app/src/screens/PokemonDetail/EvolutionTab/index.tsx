@@ -115,9 +115,9 @@ function EvolutionRow({ step, current, accent, onPress }: EvolutionRowProps) {
         <View style={styles.types}>
           {types ? (
             types.map(t => <TypeBadge key={t} type={t} />)
-          ) : (
+          ) : types === undefined ? (
             <Skeleton width={56} height={28} radius={14} />
-          )}
+          ) : null}
         </View>
       </View>
       {current ? (

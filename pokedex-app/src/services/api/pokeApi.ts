@@ -21,6 +21,8 @@ export const pokeApi = createApi({
   reducerPath: 'pokeApi',
   baseQuery: axiosBaseQuery(),
   keepUnusedDataFor: ONE_WEEK_IN_SECONDS,
+  // Ambil ulang query aktif saat koneksi kembali (lihat setupListeners di store).
+  refetchOnReconnect: true,
   // Cache dipulihkan dari redux-persist supaya data yang pernah dibuka tetap ada saat offline.
   extractRehydrationInfo(action, { reducerPath }): any {
     if (isRehydrateAction(action) && action.key === 'root') {

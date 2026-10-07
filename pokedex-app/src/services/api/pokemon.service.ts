@@ -1,11 +1,13 @@
 import type {
   EvolutionChain,
+  PokemonForm,
+  PokemonTypeName,
   NamedAPIResourceList,
   Pokemon,
   PokemonSpecies,
   PokemonSummary,
 } from '@/types';
-import { MAX_POKEMON_ID, idFromUrl } from '@/utils/pokemon';
+import { MAX_POKEMON_ID, idFromUrl, typeNames } from '@/utils/pokemon';
 import { pokeApi } from './pokeApi';
 
 export const pokemonApi = pokeApi.injectEndpoints({
@@ -32,6 +34,14 @@ export const pokemonApi = pokeApi.injectEndpoints({
         abilities: res.abilities,
         species: res.species,
       }),
+    }),
+    /**
+     * Tipe saja, untuk kartu di grid. Pakai `/pokemon-form/{id}` (±27 KB) alih-alih
+     * `/pokemon/{id}` (sampai ±300 KB) — parse JSON besar di thread JS bikin scroll patah-patah.
+     */
+    getPokemonTypes: build.query<PokemonTypeName[], number>({
+      query: id => `/pokemon-form/${id}`,
+      transformResponse: (res: PokemonForm) => typeNames(res.types),
     }),
     getPokemonSpecies: build.query<PokemonSpecies, number | string>({
       query: idOrName => `/pokemon-species/${idOrName}`,
@@ -62,6 +72,7 @@ export const pokemonApi = pokeApi.injectEndpoints({
 export const {
   useGetPokemonIndexQuery,
   useGetPokemonQuery,
+  useGetPokemonTypesQuery,
   useGetPokemonSpeciesQuery,
   useGetEvolutionChainQuery,
 } = pokemonApi;

@@ -77,6 +77,16 @@ Sheet Urutkan & Filter dan sheet Ability = komponen `organisms/`, bukan route.
 - **Pencarian, filter, urut = lokal** di atas index `GET /pokemon?limit=1025` (PokéAPI tidak punya search).
   Batas `MAX_POKEMON_ID = 1025` membuang varian bentuk (id 10001+).
 - Gambar Pokémon: `artworkUrl(id)` — dibentuk dari id, tanpa panggil detail.
+- **Tipe di kartu grid pakai `getPokemonTypes` (`/pokemon-form/{id}`, ±27 KB), bukan `getPokemon`
+  (`/pokemon/{id}`, sampai ±300 KB)** — parse JSON besar di thread JS bikin scroll patah. Id form default
+  = id Pokémon untuk 1–1025 (sudah dicek 50 sampel termasuk Unown, Wormadam, Arceus, Ogerpon).
+  `usePokemonTypes` → `undefined` (memuat) / `null` (gagal, mis. offline) / array.
+- **Offline**: `@react-native-community/netinfo` disambungkan ke `setupListeners` RTK Query
+  (`refetchOnReconnect`). `useIsOffline()` = tidak terhubung **atau** internet tak terjangkau.
+  `organisms/OfflineBanner` global di `App.tsx`. Error UI hanya muncul kalau `isError && !data`
+  (data cache tetap ditampilkan).
+- Grid: animasi muncul hanya sekali per id (`seenIds`), `removeClippedSubviews` di Android,
+  batch render kecil (`initialNumToRender`/`maxToRenderPerBatch` 6, `windowSize` 5).
 - PokéAPI menolak request **tanpa User-Agent** (403). Di RN sudah otomatis; ingat saat bikin script.
 - Satuan PokéAPI: `height` desimeter, `weight` hektogram → pakai `formatHeight` / `formatWeight`.
 
@@ -108,11 +118,35 @@ Sheet Urutkan & Filter dan sheet Ability = komponen `organisms/`, bukan route.
 |---|---|
 | atoms | `AppText`, `Button`, `IconButton`, `PressableScale`, `PokeballIcon`, `Skeleton`, `StatusBarScrim`, `TypeBadge` |
 | molecules | `PokemonCard`, `PokemonCardSkeleton`, `TypeChip`, `SearchField`, `StatRow`, `EmptyState`, `SectionHeader`, `UnderlineTabs`, `InfoRow`, `TypeEffectGroup` |
-| organisms | `TabBar`, `BottomSheet`, `CollapsingTopBar` |
+| organisms | `TabBar`, `BottomSheet`, `CollapsingTopBar`, `OfflineBanner` |
 | templates | — |
 
-Hooks: `useDebouncedValue`, `useKeyboardVisible`, `usePokemonTypes` (tipe lazy per kartu), `useRefresh`,
+Hooks: `useDebouncedValue`, `useIsOffline`, `useKeyboardVisible`, `usePokemonTypes` (tipe lazy per kartu), `useRefresh`,
 `useStatusBarStyle`, `useTabBarInset`.
+
+### Ikon app
+
+Pikachu (official artwork) di atas merah brand, dibuat dari `design/assets/25.png`:
+Android `mipmap-*/ic_launcher{,_round,_foreground,_monochrome}.png` + adaptive icon
+`mipmap-anydpi-v26/` (latar `@color/ic_launcher_background`, themed icon Android 13+);
+iOS `Images.xcassets/AppIcon.appiconset` (tanpa alpha).
+
+### Ukuran APK release (pola dari project SmartBattalion)
+
+- `enableProguardInReleaseBuilds = true` → R8 + `shrinkResources`. Library baru yang memakai refleksi /
+  dipanggil dari native → tambah keep rule di `android/app/proguard-rules.pro` (lihat README library-nya).
+- `reactNativeArchitectures=armeabi-v7a,arm64-v8a` (tanpa x86 emulator), `useLegacyPackaging` (.so dikompres),
+  `localeFilters ["en","in"]`.
+- Font di `src/assets/fonts` sudah di-**subset** (Latin + simbol yang dipakai). Menambah teks dengan
+  karakter non-Latin baru → cek glyph-nya masih ada (kalau tidak, sistem memakai font fallback).
+  Salinan Android ada di `android/app/src/main/assets/fonts` — samakan setelah mengganti font.
+
+### APK release di git
+
+- `documentation/*-release.apk` **di-commit** (debug tetap di-ignore). Task gradle hanya menyimpan
+  APK terbaru per varian; versi lama ada di riwayat git.
+- `python3 documentation/regen-html.py` juga memperbarui tombol download di `../README.md`
+  (blok `<!-- apk-download -->`) ke nama APK versi terbaru — jalankan setelah build release.
 
 ### Patch
 

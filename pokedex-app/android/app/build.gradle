@@ -57,8 +57,11 @@ react {
 
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
+ *
+ * Aktif: R8 membuang kode Java/Kotlin library yang tidak terpakai dan `shrinkResources` membuang
+ * resource yang tidak dirujuk. Keep rule untuk library yang butuh refleksi ada di proguard-rules.pro.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -92,6 +95,19 @@ android {
             outputFileName = "PokedexApp-v${variant.versionName}(${variant.versionCode})-${variant.buildType.name}.apk"
         }
     }
+    // Hanya bawa string terjemahan library (AndroidX, dll.) untuk bahasa Inggris & Indonesia — UI app
+    // sudah hard-coded bahasa Indonesia di JS, jadi puluhan bahasa lain di resources.arsc cuma bobot mati.
+    androidResources {
+        localeFilters += ["en", "in"]
+    }
+    // Native library (.so) dikompres di dalam APK — default AGP menyimpannya tanpa kompresi supaya bisa
+    // di-mmap langsung, tapi APK ini dibagikan sebagai file (bukan lewat Play Store/AAB), jadi ukuran
+    // unduhan lebih penting. Hasilnya .so diekstrak sekali saat install.
+    packaging {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -109,6 +125,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
@@ -116,12 +133,16 @@ android {
 
 /**
  * Setiap kali assembleDebug/assembleRelease selesai, salin APK-nya ke documentation/
- * di root repo. File .apk di-gitignore; yang di-commit hanya CHANGELOG.md/.html.
+ * di root repo. APK debug di-gitignore; APK release di-commit untuk tombol download di README.
  */
 def changelogDir = new File(rootProject.projectDir.parentFile, "documentation")
 
 ["debug", "release"].each { variantName ->
     tasks.register("copy${variantName.capitalize()}ApkToChangelog", Copy) {
+        // Simpan hanya APK terbaru per varian — versi lama tetap ada di riwayat git.
+        doFirst {
+            delete fileTree(changelogDir) { include "*-${variantName}.apk" }
+        }
         from(layout.buildDirectory.dir("outputs/apk/${variantName}")) {
             include "*.apk"
         }

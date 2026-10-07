@@ -1,4 +1,6 @@
+import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import {
@@ -48,8 +50,27 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-// refetchOnReconnect / refetchOnFocus RTK Query.
-setupListeners(store.dispatch);
+/**
+ * Sambungkan status koneksi & app ke RTK Query (bawaan `setupListeners` memakai event browser
+ * yang tidak ada di RN). Saat kembali online, query yang aktif diambil ulang (`refetchOnReconnect`).
+ */
+setupListeners(
+  store.dispatch,
+  (dispatch, { onOnline, onOffline, onFocus, onFocusLost }) => {
+    const unsubscribeNet = NetInfo.addEventListener(state => {
+      const online =
+        state.isConnected !== false && state.isInternetReachable !== false;
+      dispatch(online ? onOnline() : onOffline());
+    });
+    const appState = AppState.addEventListener('change', status =>
+      dispatch(status === 'active' ? onFocus() : onFocusLost()),
+    );
+    return () => {
+      unsubscribeNet();
+      appState.remove();
+    };
+  },
+);
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;

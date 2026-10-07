@@ -18,8 +18,11 @@ export interface PokemonCardProps
   extends Omit<PressableScaleProps, 'children' | 'id'> {
   id: number;
   name: string;
-  /** `undefined` = tipe belum dimuat → kartu netral + skeleton pill. */
-  types?: PokemonTypeName[];
+  /**
+   * `undefined` = tipe sedang dimuat → kartu netral + skeleton pill.
+   * `null` = tipe tidak tersedia (offline) → kartu netral tanpa skeleton.
+   */
+  types?: PokemonTypeName[] | null;
 }
 
 /** Desain: `Card/Pokemon`. Warna kartu mengikuti tipe pertama. */
@@ -56,9 +59,9 @@ function PokemonCard({ id, name, types, style, ...rest }: PokemonCardProps) {
           types.map(t => (
             <TypeBadge key={t} type={t} tone="onColor" surfaceType={primary} />
           ))
-        ) : (
+        ) : types === undefined ? (
           <Skeleton width={52} height={22} radius={11} />
-        )}
+        ) : null}
       </View>
     </PressableScale>
   );

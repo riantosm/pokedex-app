@@ -23,7 +23,7 @@ export interface TypeTileProps {
 /** Tile tipe (desain: halaman Tipe). Jumlah Pokémon dari `GET /type/{name}`, lazy & ter-cache. */
 function TypeTile({ type, index, width, onPress }: TypeTileProps) {
   const palette = typePalette(type);
-  const { data } = useGetTypeQuery(type);
+  const { data, isError } = useGetTypeQuery(type);
 
   return (
     <Animated.View entering={gridItemEntering(index)} style={{ width }}>
@@ -49,7 +49,7 @@ function TypeTile({ type, index, width, onPress }: TypeTileProps) {
           <AppText variant="label" color={palette.textMuted}>
             {formatCount(data.pokemon.length)} Pokémon
           </AppText>
-        ) : (
+        ) : isError ? null : (
           <Skeleton width={64} height={12} color={palette.pill} />
         )}
       </PressableScale>

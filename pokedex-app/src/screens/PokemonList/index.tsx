@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -54,6 +55,7 @@ export default function PokemonList({
   const { width } = useWindowDimensions();
   const cardWidth = (width - H_PADDING * 2 - GAP) / 2;
   const listRef = useRef<FlatList<PokemonSummary>>(null);
+  const seenIds = useRef(new Set<number>());
   const bottomInset = useTabBarInset();
 
   const [query, setQuery] = useState('');
@@ -110,6 +112,7 @@ export default function PokemonList({
   // Filter berubah → kembali ke halaman pertama & ke atas.
   useEffect(() => {
     setPages(1);
+    seenIds.current.clear();
     listRef.current?.scrollToOffset({ offset: 0, animated: false });
   }, [debouncedQuery, type, generation, sort]);
 
@@ -136,6 +139,7 @@ export default function PokemonList({
         pokemon={item}
         index={index}
         width={cardWidth}
+        seenIds={seenIds.current}
         onPress={openDetail}
       />
     ),
@@ -292,9 +296,12 @@ export default function PokemonList({
           }
         }}
         onEndReachedThreshold={0.6}
-        initialNumToRender={8}
-        maxToRenderPerBatch={8}
-        windowSize={7}
+        // Tuning grid bergambar: render sedikit per batch, lepas view di luar layar (Android).
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        updateCellsBatchingPeriod={60}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === 'android'}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       />

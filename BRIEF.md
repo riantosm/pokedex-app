@@ -51,7 +51,7 @@ Header merah, kolom cari, tombol urutkan, chip filter tipe, grid 2 kolom kartu P
 |---|---|---|
 | Daftar nama + id | `GET /pokemon?limit=1025` | Sekali panggil (±40 KB), cache. **Id diambil dari URL** (`.../pokemon/25/` → 25). Pakai `limit=1025` agar varian bentuk (id 10001+) tidak ikut. |
 | Gambar kartu | `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png` | Dibentuk dari id — tidak perlu panggil detail. |
-| Tipe di kartu | `GET /pokemon/{id}` → `types[]` | Diambil per kartu saat tampil di layar (lazy), di-cache. |
+| Tipe di kartu | `GET /pokemon-form/{id}` → `types[]` | Diambil per kartu saat tampil di layar (lazy), di-cache. Payload ±10× lebih kecil dari `/pokemon/{id}` (tanpa `moves`); id form default = id Pokémon untuk #1–#1025. |
 | Filter tipe | `GET /type/{name}` → `pokemon[]` | Buang id > 1025. |
 | Filter generasi | `GET /generation/{id}` → `pokemon_species[]` | 9 generasi. |
 | Pencarian | — (lokal) | PokéAPI **tidak punya endpoint search**. Cari di index lokal berdasarkan nama (substring) atau nomor. |
@@ -114,7 +114,8 @@ Tentang aplikasi, kredit sumber data (PokéAPI), versi app, tombol hapus cache.
 | Endpoint | Dipakai di |
 |---|---|
 | `GET /pokemon?limit=1025` | Splash, Home (index + search) |
-| `GET /pokemon/{id}` | Kartu (tipe), Detail (about, stats) |
+| `GET /pokemon/{id}` | Detail (about, stats) |
+| `GET /pokemon-form/{id}` | Kartu (tipe) |
 | `GET /pokemon-species/{id}` | Detail (deskripsi, genus, gender, habitat, evolusi) |
 | `GET /evolution-chain/{id}` | Detail — tab Evolusi |
 | `GET /type` | Halaman Tipe |

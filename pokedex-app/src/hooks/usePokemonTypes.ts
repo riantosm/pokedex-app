@@ -1,9 +1,16 @@
-import { useGetPokemonQuery } from '@/services/api/pokemon.service';
+import { useGetPokemonTypesQuery } from '@/services/api/pokemon.service';
 import type { PokemonTypeName } from '@/types';
-import { typeNames } from '@/utils/pokemon';
 
-/** Tipe Pokémon (lazy, ter-cache). `undefined` selama belum dimuat. */
-export function usePokemonTypes(id: number): PokemonTypeName[] | undefined {
-  const { data } = useGetPokemonQuery(id);
-  return data ? typeNames(data.types) : undefined;
+/**
+ * Tipe Pokémon untuk kartu (lazy, ter-cache).
+ * `undefined` = masih dimuat, `null` = gagal dimuat (mis. offline & belum ada di cache).
+ */
+export function usePokemonTypes(
+  id: number,
+): PokemonTypeName[] | null | undefined {
+  const { data, isError } = useGetPokemonTypesQuery(id);
+  if (data) {
+    return data;
+  }
+  return isError ? null : undefined;
 }

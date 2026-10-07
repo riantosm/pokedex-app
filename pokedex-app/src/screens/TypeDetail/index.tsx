@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
+  Platform,
   RefreshControl,
   StyleSheet,
   View,
@@ -58,6 +59,7 @@ export default function TypeDetail({
   const { width } = useWindowDimensions();
   const cardWidth = (width - H_PADDING * 2 - GAP) / 2;
   const [pages, setPages] = useState(1);
+  const seenIds = useRef(new Set<number>());
   const scrollY = useSharedValue(0);
 
   const { data, isError, isLoading, refetch } = useGetTypeQuery(name);
@@ -215,6 +217,7 @@ export default function TypeDetail({
             pokemon={item}
             index={index}
             width={cardWidth}
+            seenIds={seenIds.current}
             onPress={openPokemon}
           />
         )}
@@ -230,9 +233,11 @@ export default function TypeDetail({
           }
         }}
         onEndReachedThreshold={0.6}
-        initialNumToRender={8}
-        maxToRenderPerBatch={8}
-        windowSize={7}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        updateCellsBatchingPeriod={60}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === 'android'}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
