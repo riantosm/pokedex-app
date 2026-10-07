@@ -3,6 +3,7 @@ import {
   type PokemonTypeName,
   type PokemonTypeSlot,
 } from '@/types';
+import { formatName } from './format';
 
 /** Jumlah Pokémon nasional. Id di atas ini adalah varian bentuk (mulai 10001). */
 export const MAX_POKEMON_ID = 1025;
@@ -22,6 +23,87 @@ export function idFromUrl(url: string): number {
 /** Artwork resmi dibentuk dari id, tanpa perlu memanggil detail. */
 export function artworkUrl(id: number): string {
   return `${ARTWORK_BASE}/${id}.png`;
+}
+
+/** Nama resmi (Inggris) yang tidak bisa dibentuk dari slug. */
+const SPECIAL_NAMES: Record<string, string> = {
+  'nidoran-f': 'Nidoran♀',
+  'nidoran-m': 'Nidoran♂',
+  'mr-mime': 'Mr. Mime',
+  farfetchd: 'Farfetch’d',
+  'ho-oh': 'Ho-Oh',
+  'mime-jr': 'Mime Jr.',
+  'porygon-z': 'Porygon-Z',
+  flabebe: 'Flabébé',
+  'type-null': 'Type: Null',
+  'jangmo-o': 'Jangmo-o',
+  'hakamo-o': 'Hakamo-o',
+  'kommo-o': 'Kommo-o',
+  sirfetchd: 'Sirfetch’d',
+  'mr-rime': 'Mr. Rime',
+  'wo-chien': 'Wo-Chien',
+  'chien-pao': 'Chien-Pao',
+  'ting-lu': 'Ting-Lu',
+  'chi-yu': 'Chi-Yu',
+};
+
+/**
+ * `GET /pokemon?limit=1025` memakai slug bentuk bawaan untuk Pokémon yang punya banyak bentuk
+ * (`deoxys-normal`, `zygarde-50`, `maushold-family-of-four`) — nama tampilannya cukup nama spesies.
+ */
+const DEFAULT_FORM_SLUGS = new Set([
+  'deoxys-normal',
+  'wormadam-plant',
+  'giratina-altered',
+  'shaymin-land',
+  'basculin-red-striped',
+  'darmanitan-standard',
+  'frillish-male',
+  'jellicent-male',
+  'tornadus-incarnate',
+  'thundurus-incarnate',
+  'landorus-incarnate',
+  'keldeo-ordinary',
+  'meloetta-aria',
+  'pyroar-male',
+  'meowstic-male',
+  'aegislash-shield',
+  'pumpkaboo-average',
+  'gourgeist-average',
+  'zygarde-50',
+  'oricorio-baile',
+  'lycanroc-midday',
+  'wishiwashi-solo',
+  'minior-red-meteor',
+  'mimikyu-disguised',
+  'toxtricity-amped',
+  'eiscue-ice',
+  'indeedee-male',
+  'morpeko-full-belly',
+  'urshifu-single-strike',
+  'basculegion-male',
+  'enamorus-incarnate',
+  'oinkologne-male',
+  'maushold-family-of-four',
+  'squawkabilly-green-plumage',
+  'palafin-zero',
+  'tatsugiri-curly',
+  'dudunsparce-two-segment',
+]);
+
+/**
+ * Nama tampilan Pokémon dari slug `pokemon` / `pokemon-species` tanpa memanggil API:
+ * `nidoran-f` → `Nidoran♀`, `deoxys-normal` → `Deoxys`, `iron-treads` → `Iron Treads`.
+ * Nama dalam bahasa data lain butuh `species.names` (dipakai di halaman detail).
+ */
+export function pokemonName(slug: string): string {
+  if (SPECIAL_NAMES[slug]) {
+    return SPECIAL_NAMES[slug];
+  }
+  if (DEFAULT_FORM_SLUGS.has(slug)) {
+    return formatName(slug.split('-')[0]);
+  }
+  return formatName(slug);
 }
 
 export function isPokemonTypeName(name: string): name is PokemonTypeName {

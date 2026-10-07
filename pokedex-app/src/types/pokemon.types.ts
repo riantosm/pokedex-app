@@ -1,4 +1,4 @@
-import type { NamedAPIResource } from './common.types';
+import type { LocalizedName, NamedAPIResource } from './common.types';
 
 /** Satu entri index Pokédex, diturunkan dari `GET /pokemon?limit=1025`. */
 export interface PokemonSummary {
@@ -66,6 +66,7 @@ export interface Genus {
 export interface PokemonSpecies {
   id: number;
   name: string;
+  names: LocalizedName[];
   gender_rate: number;
   capture_rate: number;
   is_legendary: boolean;
@@ -74,6 +75,9 @@ export interface PokemonSpecies {
   generation: NamedAPIResource;
   growth_rate: NamedAPIResource;
   egg_groups: NamedAPIResource[];
+  color: NamedAPIResource;
+  shape: NamedAPIResource | null;
+  pokedex_numbers: { entry_number: number; pokedex: NamedAPIResource }[];
   evolution_chain: { url: string };
   flavor_text_entries: FlavorTextEntry[];
   genera: Genus[];

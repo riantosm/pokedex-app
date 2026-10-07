@@ -45,4 +45,6 @@ export interface PokemonTypeDetail {
   name: string;
   damage_relations: TypeRelations;
   pokemon: TypePokemon[];
+  /** Nama move bertipe ini (filter tipe di daftar Moves). */
+  moves: string[];
 }

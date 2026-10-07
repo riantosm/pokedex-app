@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Merah brand (#DC0A2D) — sama dengan Splash JS, supaya tidak ada kilasan warna lain saat app dibuka. -->
+    <color name="splash_background">#DC0A2D</color>
+</resources>

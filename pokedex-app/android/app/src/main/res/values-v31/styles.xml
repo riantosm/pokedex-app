@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Android 12+: splash sistem (ikon app) memakai latar merah brand, lalu disambung Splash JS. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+    </style>
+
+</resources>

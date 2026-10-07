@@ -15,9 +15,9 @@ import TypeBadge from '@/components/atoms/TypeBadge';
 import { TOP_BAR_HEIGHT } from '@/components/organisms/CollapsingTopBar';
 import { colors, type TypePalette } from '@/theme/colors';
 import type { PokemonTypeName } from '@/types';
-import { formatDexNumber, formatName } from '@/utils/format';
+import { formatDexNumber } from '@/utils/format';
 import { HERO_PARALLAX } from '@/utils/motion';
-import { artworkUrl } from '@/utils/pokemon';
+import { artworkUrl, pokemonName } from '@/utils/pokemon';
 
 const ART_AREA = 232;
 const ART_SIZE = 210;
@@ -25,6 +25,8 @@ const ART_SIZE = 210;
 export interface DetailHeroProps {
   id: number;
   name: string;
+  /** Nama sesuai bahasa data (dari species); tanpa ini → slug diformat. */
+  title?: string;
   types?: PokemonTypeName[];
   genus?: string;
   /** `legendary` / `mythical` dari species. */
@@ -38,6 +40,7 @@ export interface DetailHeroProps {
 export default function DetailHero({
   id,
   name,
+  title,
   types,
   genus,
   badge,
@@ -95,7 +98,7 @@ export default function DetailHero({
             style={styles.name}
             accessibilityRole="header"
           >
-            {formatName(name)}
+            {title ?? pokemonName(name)}
           </AppText>
           <AppText variant="heading" color={palette.textMuted}>
             {formatDexNumber(id)}

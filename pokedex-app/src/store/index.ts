@@ -1,6 +1,5 @@
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import {
@@ -10,29 +9,37 @@ import {
   PURGE,
   REGISTER,
   REHYDRATE,
+  createMigrate,
   persistReducer,
   persistStore,
 } from 'redux-persist';
 import { pokeApi } from '@/services/api/pokeApi';
+import { addConnectionListener } from '@/services/network';
 import favoritesReducer from './slices/favoritesSlice';
 import networkReducer from './slices/networkSlice';
+import { PERSIST_VERSION, createMigrations } from './migrations';
+import settingsReducer from './slices/settingsSlice';
 
 const rootReducer = combineReducers({
   favorites: favoritesReducer,
   network: networkReducer,
+  settings: settingsReducer,
   [pokeApi.reducerPath]: pokeApi.reducer,
 });
 
 /**
- * Whitelist: favorit (data pengguna) + cache PokéAPI (supaya data yang pernah dibuka
+ * Whitelist: favorit & pengaturan (data pengguna) + cache PokéAPI (supaya data yang pernah dibuka
  * tetap ada saat offline). Cache dipulihkan lewat `extractRehydrationInfo` di pokeApi.ts.
  */
 const persistedReducer = persistReducer(
   {
     key: 'root',
-    version: 1,
+    version: PERSIST_VERSION,
     storage: AsyncStorage,
-    whitelist: ['favorites', pokeApi.reducerPath],
+    migrate: createMigrate(createMigrations(pokeApi.reducerPath), {
+      debug: false,
+    }),
+    whitelist: ['favorites', 'settings', pokeApi.reducerPath],
   },
   rootReducer,
 );
@@ -59,7 +66,7 @@ export const persistor = persistStore(store);
 setupListeners(
   store.dispatch,
   (dispatch, { onOnline, onOffline, onFocus, onFocusLost }) => {
-    const unsubscribeNet = NetInfo.addEventListener(state => {
+    const unsubscribeNet = addConnectionListener(state => {
       const online =
         state.isConnected !== false && state.isInternetReachable !== false;
       dispatch(online ? onOnline() : onOffline());

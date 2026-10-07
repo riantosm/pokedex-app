@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: '#C9C9D1',
+    borderColor: colors.control,
   },
   radioOn: {
     borderWidth: 6,

@@ -1,5 +1,6 @@
 import {
   cleanFlavorText,
+  formatDate,
   formatDexNumber,
   formatHeight,
   formatName,
@@ -36,5 +37,9 @@ describe('format', () => {
     ).toBe(
       'Obviously prefers hot places. When it rains, steam is said to spout',
     );
+  });
+
+  it('tanggal pendek bahasa Indonesia', () => {
+    expect(formatDate(Date.UTC(2026, 9, 6, 12))).toBe('6 Okt 2026');
   });
 });

@@ -1,4 +1,10 @@
-import { artworkUrl, genderRatio, idFromUrl, typeNames } from '../pokemon';
+import {
+  artworkUrl,
+  genderRatio,
+  idFromUrl,
+  pokemonName,
+  typeNames,
+} from '../pokemon';
 
 describe('idFromUrl', () => {
   it('ambil id dari URL resource PokéAPI', () => {
@@ -40,5 +46,17 @@ describe('genderRatio', () => {
 
   it('tanpa gender (-1) → null', () => {
     expect(genderRatio(-1)).toBeNull();
+  });
+});
+
+describe('pokemonName', () => {
+  it('nama khusus, bentuk bawaan, dan slug biasa', () => {
+    expect(pokemonName('nidoran-f')).toBe('Nidoran♀');
+    expect(pokemonName('type-null')).toBe('Type: Null');
+    expect(pokemonName('deoxys-normal')).toBe('Deoxys');
+    expect(pokemonName('maushold-family-of-four')).toBe('Maushold');
+    expect(pokemonName('iron-treads')).toBe('Iron Treads');
+    expect(pokemonName('tapu-koko')).toBe('Tapu Koko');
+    expect(pokemonName('pikachu')).toBe('Pikachu');
   });
 });

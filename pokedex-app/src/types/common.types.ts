@@ -11,3 +11,27 @@ export interface NamedAPIResourceList {
   previous: string | null;
   results: NamedAPIResource[];
 }
+
+/** Nama terlokalisasi, mis. `names[]` di hampir semua resource. */
+export interface LocalizedName {
+  name: string;
+  language: NamedAPIResource;
+}
+
+/** Deskripsi terlokalisasi (`descriptions[]`). */
+export interface LocalizedDescription {
+  description: string;
+  language: NamedAPIResource;
+}
+
+/** Efek terlokalisasi (`effect_entries[]`). `short_effect` tidak selalu ada. */
+export interface LocalizedEffect {
+  effect: string;
+  short_effect?: string;
+  language: NamedAPIResource;
+}
+
+/** Referensi tanpa nama (mis. `contest_effect`, `characteristics[]`). */
+export interface APIResource {
+  url: string;
+}

@@ -1,4 +1,5 @@
 import type { Ability } from '@/types';
+import { latestPerLanguage, supportedOnly } from '@/utils/i18n';
 import { pokeApi } from './pokeApi';
 
 const abilityApi = pokeApi.injectEndpoints({
@@ -8,11 +9,11 @@ const abilityApi = pokeApi.injectEndpoints({
       transformResponse: (res: Ability): Ability => ({
         id: res.id,
         name: res.name,
+        names: supportedOnly(res.names),
         generation: res.generation,
-        // Deskripsi ability di PokéAPI hanya lengkap dalam bahasa Inggris.
-        effect_entries: res.effect_entries.filter(
-          e => e.language.name === 'en',
-        ),
+        // Efek lengkap hanya ada dalam en/de/fr; teks game (flavor) mengisi bahasa lainnya.
+        effect_entries: latestPerLanguage(res.effect_entries),
+        flavor_text_entries: latestPerLanguage(res.flavor_text_entries),
       }),
     }),
   }),

@@ -86,8 +86,8 @@ android {
         applicationId "com.kdahouse.pokedex"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1          // naik +1 tiap rilis
-        versionName "0.1.0"    // semver
+        versionCode 2          // naik +1 tiap rilis
+        versionName "0.2.0"    // semver
     }
 
     applicationVariants.all { variant ->

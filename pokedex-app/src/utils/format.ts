@@ -61,3 +61,14 @@ export function formatBytes(bytes: number): string {
   }
   return `${decimalFormat.format(value)} ${units[unit]}`;
 }
+
+const dateFormat = new Intl.DateTimeFormat('id-ID', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+
+/** Milidetik Unix → `6 Okt 2026`. */
+export function formatDate(epochMs: number): string {
+  return dateFormat.format(new Date(epochMs));
+}

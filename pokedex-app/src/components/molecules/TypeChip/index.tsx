@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import AppText from '@/components/atoms/AppText';
 import PressableScale, {
@@ -5,8 +6,10 @@ import PressableScale, {
 } from '@/components/atoms/PressableScale';
 import { colors } from '@/theme/colors';
 
-export interface TypeChipProps extends PressableScaleProps {
+export interface TypeChipProps extends Omit<PressableScaleProps, 'children'> {
   label: string;
+  /** Ikon kecil di depan label (mis. area Pal Park). */
+  icon?: ReactNode;
   /** Warna titik di depan label (warna tipe). Tanpa titik untuk chip "Semua". */
   dotColor?: string;
   active?: boolean;
@@ -16,6 +19,7 @@ export interface TypeChipProps extends PressableScaleProps {
 export default function TypeChip({
   label,
   dotColor,
+  icon,
   active = false,
   style,
   ...rest
@@ -27,6 +31,7 @@ export default function TypeChip({
       style={[styles.base, active ? styles.active : styles.inactive, style]}
       {...rest}
     >
+      {icon}
       {dotColor && !active && (
         <View style={[styles.dot, { backgroundColor: dotColor }]} />
       )}

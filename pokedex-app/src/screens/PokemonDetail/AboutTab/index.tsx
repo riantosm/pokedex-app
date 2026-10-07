@@ -1,20 +1,33 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ChevronRight } from 'lucide-react-native';
 import AppText from '@/components/atoms/AppText';
 import PressableScale from '@/components/atoms/PressableScale';
+import ChipScroller from '@/components/molecules/ChipScroller';
 import InfoRow from '@/components/molecules/InfoRow';
+import LinkChip from '@/components/molecules/LinkChip';
+import SectionHeader from '@/components/molecules/SectionHeader';
+import { useDataLanguage } from '@/hooks/useDataLanguage';
+import { ROUTES } from '@/navigation/paths';
+import type { RootStackParamList } from '@/navigation/types';
 import { colors } from '@/theme/colors';
 import { fonts } from '@/theme/typography';
-import type { Pokemon, PokemonSpecies } from '@/types';
+import type { Pokemon, PokemonSpecies, SpeciesGroupKind } from '@/types';
 import {
   cleanFlavorText,
+  formatDexNumber,
   formatHeight,
   formatName,
   formatPercent,
   formatWeight,
 } from '@/utils/format';
 import { generationById } from '@/utils/generations';
+import { pickEntry } from '@/utils/i18n';
+import { growthRateLabel } from '@/utils/labels';
 import { genderRatio, idFromUrl } from '@/utils/pokemon';
+import AbilityName from './AbilityName';
+import GroupLink from './GroupLink';
 
 export interface AboutTabProps {
   pokemon: Pokemon;
@@ -27,8 +40,16 @@ export default function AboutTab({
   species,
   onAbilityPress,
 }: AboutTabProps) {
-  // Entri bahasa Inggris terakhir = dari game terbaru.
-  const flavor = species.flavor_text_entries.at(-1)?.flavor_text;
+  const lang = useDataLanguage();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const openGroup = (kind: SpeciesGroupKind, name: string) =>
+    navigation.push(ROUTES.POKEMON_GROUP, { kind, name });
+  // Satu entri per bahasa (game terbaru) — pilih sesuai bahasa data.
+  const flavor = pickEntry(species.flavor_text_entries, lang)?.flavor_text;
+  const regionalDex = species.pokedex_numbers.filter(
+    p => p.pokedex.name !== 'national',
+  );
   const generation = generationById(idFromUrl(species.generation.url));
   const gender = genderRatio(species.gender_rate);
   const abilities = [...pokemon.abilities].sort((a, b) => a.slot - b.slot);
@@ -66,9 +87,7 @@ export default function AboutTab({
             style={[styles.ability, i < abilities.length - 1 && styles.divider]}
           >
             <View style={styles.abilityName}>
-              <AppText variant="bodyStrong">
-                {formatName(a.ability.name)}
-              </AppText>
+              <AbilityName name={a.ability.name} />
               {a.is_hidden && (
                 <View style={styles.hiddenTag}>
                   <AppText variant="micro" color={colors.ink2}>
@@ -112,20 +131,109 @@ export default function AboutTab({
         <InfoRow
           label="Egg group"
           value={
-            species.egg_groups.map(g => formatName(g.name)).join(', ') || '—'
+            species.egg_groups.length ? (
+              <View style={styles.links}>
+                {species.egg_groups.map(g => (
+                  <GroupLink
+                    key={g.name}
+                    kind="egg-group"
+                    name={g.name}
+                    onPress={openGroup}
+                  />
+                ))}
+              </View>
+            ) : (
+              '—'
+            )
           }
         />
         <InfoRow
           label="Habitat"
-          value={species.habitat ? formatName(species.habitat.name) : '—'}
+          value={
+            species.habitat ? (
+              <View style={styles.links}>
+                <GroupLink
+                  kind="pokemon-habitat"
+                  name={species.habitat.name}
+                  onPress={openGroup}
+                />
+              </View>
+            ) : (
+              '—'
+            )
+          }
+        />
+        <InfoRow
+          label="Warna & bentuk"
+          value={
+            <View style={styles.links}>
+              <GroupLink
+                kind="pokemon-color"
+                name={species.color.name}
+                onPress={openGroup}
+              />
+              {species.shape && (
+                <GroupLink
+                  kind="pokemon-shape"
+                  name={species.shape.name}
+                  onPress={openGroup}
+                />
+              )}
+            </View>
+          }
         />
         <InfoRow label="Capture rate" value={String(species.capture_rate)} />
         <InfoRow
           label="Growth rate"
-          value={formatName(species.growth_rate.name)}
           divider={false}
+          value={
+            <View style={styles.links}>
+              <LinkChip
+                label={growthRateLabel(species.growth_rate.name)}
+                onPress={() =>
+                  navigation.push(ROUTES.GROWTH_RATE, {
+                    name: species.growth_rate.name,
+                  })
+                }
+              />
+            </View>
+          }
         />
       </View>
+
+      {regionalDex.length > 0 && (
+        <View style={styles.dex}>
+          <SectionHeader
+            title="Pokédex regional"
+            meta={`${regionalDex.length} Pokédex`}
+            variant="subheading"
+          />
+          <ChipScroller>
+            {regionalDex.map(p => (
+              <Pressable
+                key={p.pokedex.name}
+                accessibilityRole="link"
+                accessibilityLabel={`Nomor ${
+                  p.entry_number
+                } di Pokédex ${formatName(p.pokedex.name)}`}
+                onPress={() =>
+                  navigation.push(ROUTES.POKEDEX_DETAIL, {
+                    name: p.pokedex.name,
+                  })
+                }
+                style={styles.dexChip}
+              >
+                <AppText variant="calloutStrong">
+                  {formatDexNumber(p.entry_number)}
+                </AppText>
+                <AppText variant="micro" color={colors.ink3}>
+                  {formatName(p.pokedex.name)}
+                </AppText>
+              </Pressable>
+            ))}
+          </ChipScroller>
+        </View>
+      )}
     </View>
   );
 }
@@ -213,5 +321,19 @@ const styles = StyleSheet.create({
   genderLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  links: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  dex: {
+    gap: 12,
+  },
+  dexChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: colors.bg,
   },
 });

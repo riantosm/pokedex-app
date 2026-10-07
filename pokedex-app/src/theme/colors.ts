@@ -13,6 +13,8 @@ export const colors = {
   /** Tab bar melayang — sedikit tembus supaya konten di belakangnya terasa. */
   tabBar: '#FFFFFFF5',
   line: '#E6E6EC',
+  /** Garis kontrol tidak aktif (radio, segmen nonaktif). */
+  control: '#C9C9D1',
   white: '#FFFFFF',
   transparent: 'transparent',
   scrim: '#1B1B1F73',
@@ -25,6 +27,8 @@ export const colors = {
   genderMaleText: '#3A6FD8',
   genderFemaleText: '#C2477D',
   glass: '#FFFFFF2E',
+  /** Jalur progress bar di Splash (putih 25% di atas merah brand). */
+  splashTrack: '#FFFFFF40',
 } as const;
 
 /** Warna resmi tipe — untuk titik, bar stat, dan aksen kecil. */

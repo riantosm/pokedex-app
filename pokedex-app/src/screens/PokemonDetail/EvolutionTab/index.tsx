@@ -14,9 +14,9 @@ import {
   evolutionTriggerLabel,
   flattenEvolutionChain,
 } from '@/utils/evolution';
-import { formatDexNumber, formatName } from '@/utils/format';
+import { formatDexNumber } from '@/utils/format';
 import { listItemEntering } from '@/utils/motion';
-import { artworkUrl } from '@/utils/pokemon';
+import { artworkUrl, pokemonName } from '@/utils/pokemon';
 
 export interface EvolutionTabProps {
   chain: EvolutionChain;
@@ -88,7 +88,7 @@ function EvolutionRow({ step, current, accent, onPress }: EvolutionRowProps) {
       disabled={current}
       accessibilityRole="button"
       accessibilityState={{ selected: current }}
-      accessibilityLabel={`${formatName(step.name)}${
+      accessibilityLabel={`${pokemonName(step.name)}${
         current ? ', sedang dilihat' : ''
       }`}
       onPress={onPress}
@@ -112,7 +112,7 @@ function EvolutionRow({ step, current, accent, onPress }: EvolutionRowProps) {
         <AppText variant="label" color={colors.ink3}>
           {formatDexNumber(step.id)}
         </AppText>
-        <AppText variant="subheading">{formatName(step.name)}</AppText>
+        <AppText variant="subheading">{pokemonName(step.name)}</AppText>
         <View style={styles.types}>
           {types ? (
             types.map(t => <TypeBadge key={t} type={t} />)

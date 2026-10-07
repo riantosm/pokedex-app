@@ -1,4 +1,4 @@
-import { useNetInfo } from '@react-native-community/netinfo';
+import { useConnectionState } from '@/services/network';
 import { useAppSelector } from '@/store/hooks';
 import { selectApiUnreachable } from '@/store/slices/networkSlice';
 
@@ -8,7 +8,7 @@ import { selectApiUnreachable } from '@/store/slices/networkSlice';
  * `null` dari NetInfo (belum diketahui) dianggap online.
  */
 export function useIsOffline(): boolean {
-  const { isConnected, isInternetReachable } = useNetInfo();
+  const { isConnected, isInternetReachable } = useConnectionState();
   const apiUnreachable = useAppSelector(selectApiUnreachable);
   return (
     isConnected === false || isInternetReachable === false || apiUnreachable

@@ -1,11 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ellipsis, Heart, Shapes } from 'lucide-react-native';
+import { Compass, Ellipsis, Heart } from 'lucide-react-native';
 import PokeballIcon from '@/components/atoms/PokeballIcon';
 import TabBar from '@/components/organisms/TabBar';
 import FavoriteList from '@/screens/FavoriteList';
 import More from '@/screens/More';
 import PokemonList from '@/screens/PokemonList';
-import TypeList from '@/screens/TypeList';
+import Explore from '@/screens/Explore';
 import { ROUTES } from './paths';
 import type { MainTabParamList } from './types';
 
@@ -19,8 +19,8 @@ const renderTabBar = (props: Parameters<typeof TabBar>[0]) => (
 const pokedexIcon = ({ color, size }: TabIconProps) => (
   <PokeballIcon size={size} color={color} />
 );
-const typesIcon = ({ color, size }: TabIconProps) => (
-  <Shapes size={size} color={color} />
+const exploreIcon = ({ color, size }: TabIconProps) => (
+  <Compass size={size} color={color} />
 );
 const favoritesIcon = ({ color, size }: TabIconProps) => (
   <Heart size={size} color={color} />
@@ -44,11 +44,11 @@ export default function MainTabNavigator() {
         }}
       />
       <Tab.Screen
-        name={ROUTES.TYPES}
-        component={TypeList}
+        name={ROUTES.EXPLORE}
+        component={Explore}
         options={{
-          tabBarLabel: 'Tipe',
-          tabBarIcon: typesIcon,
+          tabBarLabel: 'Jelajah',
+          tabBarIcon: exploreIcon,
         }}
       />
       <Tab.Screen

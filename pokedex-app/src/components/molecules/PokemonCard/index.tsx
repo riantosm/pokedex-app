@@ -9,8 +9,8 @@ import Skeleton from '@/components/atoms/Skeleton';
 import TypeBadge from '@/components/atoms/TypeBadge';
 import { neutralPalette, typePalette } from '@/theme/colors';
 import type { PokemonTypeName } from '@/types';
-import { formatDexNumber, formatName } from '@/utils/format';
-import { artworkUrl } from '@/utils/pokemon';
+import { formatDexNumber } from '@/utils/format';
+import { artworkUrl, pokemonName } from '@/utils/pokemon';
 
 export const POKEMON_CARD_HEIGHT = 132;
 
@@ -23,13 +23,22 @@ export interface PokemonCardProps
    * `null` = tipe tidak tersedia (offline) → kartu netral tanpa skeleton.
    */
   types?: PokemonTypeName[] | null;
+  /** Ganti label nomor, mis. Pokédex regional `#001 · Nas. #906`. Default nomor nasional. */
+  numberLabel?: string;
 }
 
 /** Desain: `Card/Pokemon`. Warna kartu mengikuti tipe pertama. */
-function PokemonCard({ id, name, types, style, ...rest }: PokemonCardProps) {
+function PokemonCard({
+  id,
+  name,
+  types,
+  numberLabel,
+  style,
+  ...rest
+}: PokemonCardProps) {
   const primary = types?.[0];
   const palette = primary ? typePalette(primary) : neutralPalette;
-  const displayName = formatName(name);
+  const displayName = pokemonName(name);
 
   return (
     <PressableScale
@@ -50,8 +59,8 @@ function PokemonCard({ id, name, types, style, ...rest }: PokemonCardProps) {
           resizeMode={FastImage.resizeMode.contain}
         />
       </View>
-      <AppText variant="label" color={palette.textMuted}>
-        {formatDexNumber(id)}
+      <AppText variant="label" color={palette.textMuted} numberOfLines={1}>
+        {numberLabel ?? formatDexNumber(id)}
       </AppText>
       <AppText variant="cardTitle" color={palette.text} numberOfLines={1}>
         {displayName}

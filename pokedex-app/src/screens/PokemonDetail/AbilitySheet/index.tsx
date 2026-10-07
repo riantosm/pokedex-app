@@ -4,14 +4,13 @@ import AppText from '@/components/atoms/AppText';
 import Button from '@/components/atoms/Button';
 import Skeleton from '@/components/atoms/Skeleton';
 import BottomSheet from '@/components/organisms/BottomSheet';
+import { useDataLanguage } from '@/hooks/useDataLanguage';
 import { useGetAbilityQuery } from '@/services/api/ability.service';
 import { colors } from '@/theme/colors';
-import { cleanFlavorText, formatName } from '@/utils/format';
+import { abilityText } from '@/utils/ability';
 import { generationById } from '@/utils/generations';
+import { DATA_LANGUAGES, pickName } from '@/utils/i18n';
 import { idFromUrl } from '@/utils/pokemon';
-
-/** Efek panjang di atas batas ini diganti `short_effect` supaya sheet tetap ringkas. */
-const MAX_EFFECT_LENGTH = 320;
 
 export interface AbilitySheetProps {
   visible: boolean;
@@ -28,14 +27,16 @@ export default function AbilitySheet({
   const { data, isError, refetch } = useGetAbilityQuery(
     ability?.name ?? skipToken,
   );
-  const entry = data?.effect_entries[0];
-  const effect = entry
-    ? cleanFlavorText(
-        entry.effect.length > MAX_EFFECT_LENGTH
-          ? entry.short_effect
-          : entry.effect,
-      )
-    : null;
+  const lang = useDataLanguage();
+  const description = data ? abilityText(data, lang) : null;
+  const effect = description?.text ?? null;
+  // Efek lengkap hanya ada dalam en/de/fr — beri tahu kalau teks jatuh ke bahasa lain.
+  const fallbackNote =
+    description && description.language !== lang
+      ? `Deskripsi ability ini belum tersedia dalam ${languageLabel(
+          lang,
+        )} — ditampilkan dalam ${languageLabel(description.language)}.`
+      : null;
   const generation = data
     ? generationById(idFromUrl(data.generation.url))
     : undefined;
@@ -45,7 +46,7 @@ export default function AbilitySheet({
       <View style={styles.head}>
         <View style={styles.titleRow}>
           <AppText variant="heading" accessibilityRole="header">
-            {ability ? formatName(ability.name) : ''}
+            {ability ? pickName(data?.names, lang, ability.name) : ''}
           </AppText>
           {ability?.hidden && (
             <View style={styles.tag}>
@@ -85,12 +86,20 @@ export default function AbilitySheet({
         </View>
       )}
 
-      <AppText variant="label" color={colors.ink3}>
-        Deskripsi ability dari PokéAPI hanya tersedia dalam bahasa Inggris.
-      </AppText>
+      {fallbackNote && (
+        <AppText variant="label" color={colors.ink3}>
+          {fallbackNote}
+        </AppText>
+      )}
       <Button label="Tutup" variant="secondary" onPress={onClose} />
     </BottomSheet>
   );
+}
+
+function languageLabel(code: string): string {
+  return code === 'en'
+    ? 'bahasa Inggris'
+    : DATA_LANGUAGES.find(l => l.code === code)?.native ?? code;
 }
 
 const styles = StyleSheet.create({

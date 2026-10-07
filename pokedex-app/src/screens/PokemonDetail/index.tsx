@@ -11,13 +11,16 @@ import IconButton from '@/components/atoms/IconButton';
 import EmptyState from '@/components/molecules/EmptyState';
 import UnderlineTabs from '@/components/molecules/UnderlineTabs';
 import CollapsingTopBar from '@/components/organisms/CollapsingTopBar';
+import { useDataLanguage } from '@/hooks/useDataLanguage';
 import { useRefresh } from '@/hooks/useRefresh';
 import { useStatusBarStyle } from '@/hooks/useStatusBarStyle';
-import type { ROUTES } from '@/navigation/paths';
+import { ROUTES } from '@/navigation/paths';
 import type { RootStackScreenProps } from '@/navigation/types';
 import {
   useGetEvolutionChainQuery,
+  useGetPokemonEncountersQuery,
   useGetPokemonIndexQuery,
+  useGetPokemonMovesQuery,
   useGetPokemonQuery,
   useGetPokemonSpeciesQuery,
 } from '@/services/api/pokemon.service';
@@ -33,13 +36,16 @@ import {
   typeColors,
   typePalette,
 } from '@/theme/colors';
-import { formatName } from '@/utils/format';
+import { pickEntry, pickName } from '@/utils/i18n';
 import { tabContentEntering } from '@/utils/motion';
 import { MAX_POKEMON_ID, idFromUrl, typeNames } from '@/utils/pokemon';
 import AboutTab from './AboutTab';
 import AbilitySheet from './AbilitySheet';
 import DetailHero from './DetailHero';
 import EvolutionTab from './EvolutionTab';
+import LocationsTab from './LocationsTab';
+import MovesTab from './MovesTab';
+import StatSheet from './StatSheet';
 import StatsTab from './StatsTab';
 import TabSkeleton from './TabSkeleton';
 import WeaknessTab from './WeaknessTab';
@@ -47,8 +53,10 @@ import WeaknessTab from './WeaknessTab';
 const TABS = [
   { key: 'about', label: 'About' },
   { key: 'stats', label: 'Stats' },
+  { key: 'moves', label: 'Moves' },
   { key: 'evolution', label: 'Evolusi' },
-  { key: 'weakness', label: 'Kelemahan' },
+  { key: 'locations', label: 'Lokasi' },
+  { key: 'weakness', label: 'Lemah' },
 ] as const;
 type TabKey = (typeof TABS)[number]['key'];
 
@@ -70,6 +78,13 @@ export default function PokemonDetail({
     hidden: boolean;
   } | null>(null);
   const [abilityOpen, setAbilityOpen] = useState(false);
+  const [stat, setStat] = useState<{
+    name: string;
+    label: string;
+    value: number;
+  } | null>(null);
+  const [statOpen, setStatOpen] = useState(false);
+  const lang = useDataLanguage();
 
   const pokemonQuery = useGetPokemonQuery(id);
   const speciesQuery = useGetPokemonSpeciesQuery(id);
@@ -78,6 +93,11 @@ export default function PokemonDetail({
     : null;
   const evolutionQuery = useGetEvolutionChainQuery(evolutionId ?? skipToken);
   const { data: index } = useGetPokemonIndexQuery();
+  // Moves & lokasi dimuat hanya saat tab-nya dibuka (`/pokemon/{id}` dengan semua move cukup besar).
+  const movesQuery = useGetPokemonMovesQuery(id, { skip: tab !== 'moves' });
+  const encountersQuery = useGetPokemonEncountersQuery(id, {
+    skip: tab !== 'locations',
+  });
 
   // Tipe dari data detail; sebelum dimuat pakai tipe yang dikirim kartu.
   const types = pokemonQuery.data
@@ -100,6 +120,8 @@ export default function PokemonDetail({
     ...(evolutionId ? [evolutionQuery.refetch] : []),
     ...(types?.[0] ? [firstType.refetch] : []),
     ...(types?.[1] ? [secondType.refetch] : []),
+    ...(tab === 'moves' ? [movesQuery.refetch] : []),
+    ...(tab === 'locations' ? [encountersQuery.refetch] : []),
   ]);
 
   const onScroll = useAnimatedScrollHandler(e => {
@@ -133,7 +155,8 @@ export default function PokemonDetail({
 
   const species = speciesQuery.data;
   const pokemon = pokemonQuery.data;
-  const genus = species?.genera[0]?.genus;
+  const genus = pickEntry(species?.genera, lang)?.genus;
+  const title = pickName(species?.names, lang, name);
   const badge = species?.is_legendary
     ? 'Legendary'
     : species?.is_mythical
@@ -172,7 +195,14 @@ export default function PokemonDetail({
         );
       case 'stats':
         return pokemon ? (
-          <StatsTab pokemon={pokemon} color={accent} />
+          <StatsTab
+            pokemon={pokemon}
+            color={accent}
+            onStatPress={(statName, label, value) => {
+              setStat({ name: statName, label, value });
+              setStatOpen(true);
+            }}
+          />
         ) : (
           <TabSkeleton />
         );
@@ -184,6 +214,32 @@ export default function PokemonDetail({
             accent={accent}
             onSelect={goTo}
           />
+        ) : (
+          <TabSkeleton />
+        );
+      case 'moves':
+        return movesQuery.data ? (
+          <MovesTab
+            moves={movesQuery.data}
+            onMovePress={move =>
+              navigation.push(ROUTES.MOVE_DETAIL, { name: move })
+            }
+          />
+        ) : movesQuery.isError ? (
+          <TabError onRetry={movesQuery.refetch} />
+        ) : (
+          <TabSkeleton />
+        );
+      case 'locations':
+        return encountersQuery.data ? (
+          <LocationsTab
+            areas={encountersQuery.data}
+            onLocationPress={location =>
+              navigation.push(ROUTES.LOCATION_DETAIL, { name: location })
+            }
+          />
+        ) : encountersQuery.isError ? (
+          <TabError onRetry={encountersQuery.refetch} />
         ) : (
           <TabSkeleton />
         );
@@ -216,6 +272,7 @@ export default function PokemonDetail({
         <DetailHero
           id={id}
           name={name}
+          title={species ? title : undefined}
           types={types}
           genus={genus}
           badge={badge}
@@ -238,7 +295,7 @@ export default function PokemonDetail({
       </Animated.ScrollView>
 
       <CollapsingTopBar
-        title={formatName(name)}
+        title={title}
         palette={palette}
         scrollY={scrollY}
         revealAt={TOP_BAR_REVEAL}
@@ -269,7 +326,35 @@ export default function PokemonDetail({
         ability={ability}
         onClose={() => setAbilityOpen(false)}
       />
+      <StatSheet
+        visible={statOpen}
+        stat={stat}
+        pokemonName={title}
+        onClose={() => setStatOpen(false)}
+        onMovePress={move => {
+          setStatOpen(false);
+          navigation.push(ROUTES.MOVE_DETAIL, { name: move });
+        }}
+        onNaturesPress={() => {
+          setStatOpen(false);
+          navigation.push(ROUTES.NATURES);
+        }}
+      />
     </View>
+  );
+}
+
+function TabError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <EmptyState
+      icon={<WifiOff size={30} color={colors.ink3} />}
+      title="Data gagal dimuat"
+      body="Tab ini belum pernah dibuka saat online. Sambungkan internet lalu coba lagi."
+      actionLabel="Coba lagi"
+      actionVariant="primary"
+      onAction={onRetry}
+      style={styles.error}
+    />
   );
 }
 

@@ -3,8 +3,8 @@ import AppText from '@/components/atoms/AppText';
 import TypeEffectGroup from '@/components/molecules/TypeEffectGroup';
 import { colors } from '@/theme/colors';
 import type { TypeRelations } from '@/types';
-import { formatName } from '@/utils/format';
 import { defensiveEffectiveness } from '@/utils/typeEffectiveness';
+import { pokemonName } from '@/utils/pokemon';
 
 export interface WeaknessTabProps {
   name: string;
@@ -22,7 +22,7 @@ export default function WeaknessTab({ name, relations }: WeaknessTabProps) {
   return (
     <View style={styles.root}>
       <AppText variant="callout" color={colors.ink2}>
-        Seberapa efektif serangan setiap tipe terhadap {formatName(name)}.
+        Seberapa efektif serangan setiap tipe terhadap {pokemonName(name)}.
       </AppText>
       <Section title="Lemah terhadap">
         {quadWeak.length > 0 && (

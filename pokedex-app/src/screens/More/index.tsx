@@ -12,28 +12,36 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   ArrowUpRight,
+  ChevronRight,
   CircleCheck,
   Code,
   Database,
+  DatabaseZap,
   HardDrive,
   Info,
+  Languages,
   Trash2,
 } from 'lucide-react-native';
 import AppText from '@/components/atoms/AppText';
 import StatusBarScrim from '@/components/atoms/StatusBarScrim';
 import PressableScale from '@/components/atoms/PressableScale';
+import { useDataLanguage } from '@/hooks/useDataLanguage';
 import { useRefresh } from '@/hooks/useRefresh';
 import { useStatusBarStyle } from '@/hooks/useStatusBarStyle';
 import { useTabBarInset } from '@/hooks/useTabBarInset';
 import { pokeApi } from '@/services/api/pokeApi';
 import { pokemonApi } from '@/services/api/pokemon.service';
+import { useGetMetaQuery } from '@/services/api/reference.service';
 import { persistor } from '@/store';
 import { useAppDispatch } from '@/store/hooks';
+import { setDataLanguage } from '@/store/slices/settingsSlice';
 import { colors } from '@/theme/colors';
 import { APP_VERSION, POKEAPI_URL, SOURCE_URL } from '@/utils/appInfo';
-import { formatBytes } from '@/utils/format';
+import { formatBytes, formatDate } from '@/utils/format';
+import { DATA_LANGUAGES } from '@/utils/i18n';
 import { listItemEntering } from '@/utils/motion';
 import ClearCacheSheet from './ClearCacheSheet';
+import LanguageSheet from './LanguageSheet';
 
 /** Key redux-persist (`persist:<key>`) tempat cache & favorit disimpan. */
 const PERSIST_KEY = 'persist:root';
@@ -46,13 +54,16 @@ export default function More() {
   const [bytes, setBytes] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cleared, setCleared] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const dataLanguage = useDataLanguage();
+  const meta = useGetMetaQuery();
 
   const measure = useCallback(async () => {
     await persistor.flush();
     const raw = await AsyncStorage.getItem(PERSIST_KEY);
     setBytes(raw ? raw.length : 0);
   }, []);
-  const { refreshing, refresh } = useRefresh([measure]);
+  const { refreshing, refresh } = useRefresh([measure, meta.refetch]);
 
   useFocusEffect(
     useCallback(() => {
@@ -79,6 +90,15 @@ export default function More() {
   };
 
   const size = bytes === null ? '…' : formatBytes(bytes);
+  const languageName = DATA_LANGUAGES.find(
+    l => l.code === dataLanguage,
+  )?.native;
+  // `deploy_date` = detik Unix rilis data PokéAPI yang sedang dilayani.
+  const dataVersion = meta.data
+    ? formatDate(Number(meta.data.deploy_date) * 1000)
+    : meta.isError
+    ? '—'
+    : '…';
 
   return (
     <View style={styles.root}>
@@ -101,7 +121,19 @@ export default function More() {
           Lainnya
         </AppText>
 
-        <Group title="Data" index={0}>
+        <Group
+          title="Data"
+          index={0}
+          note="Bahasa data mengatur nama & deskripsi Pokémon, move, dan item dari PokéAPI. Tampilan app tetap bahasa Indonesia."
+        >
+          <Item
+            icon={<Languages size={20} color={colors.ink2} />}
+            label="Bahasa data"
+            value={languageName}
+            trailing={<ChevronRight size={18} color={colors.ink3} />}
+            onPress={() => setLanguageOpen(true)}
+            accessibilityHint="Pilih bahasa nama dan deskripsi dari PokéAPI"
+          />
           <Item
             icon={<Database size={20} color={colors.ink2} />}
             label="Sumber data"
@@ -137,6 +169,11 @@ export default function More() {
             value={APP_VERSION}
           />
           <Item
+            icon={<DatabaseZap size={20} color={colors.ink2} />}
+            label="Versi data PokéAPI"
+            value={dataVersion}
+          />
+          <Item
             icon={<Code size={20} color={colors.ink2} />}
             label="Kode sumber"
             trailing={<ArrowUpRight size={18} color={colors.ink3} />}
@@ -160,6 +197,12 @@ export default function More() {
         onClose={() => setConfirmOpen(false)}
         onConfirm={clearCache}
       />
+      <LanguageSheet
+        visible={languageOpen}
+        value={dataLanguage}
+        onChange={language => dispatch(setDataLanguage(language))}
+        onClose={() => setLanguageOpen(false)}
+      />
     </View>
   );
 }
@@ -167,10 +210,13 @@ export default function More() {
 function Group({
   title,
   index,
+  note,
   children,
 }: {
   title: string;
   index: number;
+  /** Penjelasan kecil di bawah daftar. */
+  note?: string;
   children: ReactNode;
 }) {
   return (
@@ -179,6 +225,11 @@ function Group({
         {title.toUpperCase()}
       </AppText>
       <View style={styles.list}>{children}</View>
+      {note && (
+        <AppText variant="label" color={colors.ink3} style={styles.disclaimer}>
+          {note}
+        </AppText>
+      )}
     </Animated.View>
   );
 }
